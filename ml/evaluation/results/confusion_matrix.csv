@@ -1,0 +1,9 @@
+true\pred,Corn___Common_rust,Corn___healthy,Potato___Early_blight,Potato___Late_blight,Potato___healthy,Tomato___Early_blight,Tomato___Late_blight,Tomato___healthy
+Corn___Common_rust,179,0,0,0,0,0,0,0
+Corn___healthy,0,174,0,0,0,0,0,0
+Potato___Early_blight,0,0,148,0,0,2,0,0
+Potato___Late_blight,0,0,0,136,9,2,2,1
+Potato___healthy,0,0,0,0,23,0,0,0
+Tomato___Early_blight,0,0,0,1,0,130,5,14
+Tomato___Late_blight,2,0,0,4,0,10,260,11
+Tomato___healthy,0,0,0,0,0,0,0,239

@@ -1,0 +1,37 @@
+{
+  "requests": 40,
+  "model": {
+    "mode": "real",
+    "format": "tflite",
+    "model_file": "khetsetu.tflite",
+    "architecture": "MobileNetV2 (alpha=1.0) transfer learning, ImageNet init",
+    "temperature": 0.7437,
+    "classes": 8,
+    "load_error": null
+  },
+  "wall_clock_ms_client": {
+    "mean": 12.1,
+    "median": 12.0,
+    "p95": 13.1,
+    "max": 13.4
+  },
+  "server_total_ms": {
+    "mean": 10.1,
+    "median": 10.0,
+    "p95": 10.8,
+    "max": 11.2
+  },
+  "server_inference_ms": {
+    "mean": 6.8,
+    "median": 6.7,
+    "p95": 7.4,
+    "max": 7.7
+  },
+  "server_preprocess_ms": {
+    "mean": 2.0,
+    "median": 2.0,
+    "p95": 2.2,
+    "max": 2.3
+  },
+  "machine": "x86_64 / Linux (client and server on same host)"
+}

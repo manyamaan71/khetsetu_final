@@ -1,0 +1,798 @@
+{
+ "Corn___Common_rust": {
+  "class_name": "Corn___Common_rust",
+  "crop": "Corn",
+  "is_healthy": false,
+  "urgency": "act_soon",
+  "condition": {
+   "en": "Common Rust",
+   "hi": "मक्का का सामान्य रस्ट (जंग रोग)"
+  },
+  "what_is_it": {
+   "en": "The leaf shows signs that look like common rust, a fungal disease of maize that forms rust-coloured pustules on the leaves.",
+   "hi": "पत्ते पर मक्का के सामान्य रस्ट जैसे निशान दिख रहे हैं। यह फफूंद रोग पत्तों पर जंग जैसे रंग के उभरे दाने बनाता है।"
+  },
+  "symptoms": {
+   "en": [
+    "Small, raised, cinnamon-brown to rusty pustules on both sides of the leaf",
+    "Pustules turn darker or black later in the season",
+    "Leaves can turn yellow and dry early when badly affected"
+   ],
+   "hi": [
+    "पत्ते की दोनों सतहों पर छोटे, उभरे, दालचीनी-भूरे या जंग जैसे दाने",
+    "मौसम के अंत में दाने गहरे या काले हो जाते हैं",
+    "ज्यादा प्रभावित पत्ते पीले होकर जल्दी सूख सकते हैं"
+   ]
+  },
+  "possible_cause": {
+   "en": "A fungus whose spores are carried by wind. It spreads best in cool, humid weather with dew or light rain.",
+   "hi": "एक फफूंद जिसके बीजाणु हवा से फैलते हैं। ठंडे, नम मौसम में, ओस या हल्की बारिश के साथ यह सबसे ज्यादा फैलती है।"
+  },
+  "prevention": {
+   "en": [
+    "Choose rust-tolerant maize varieties / hybrids",
+    "Sow on time; very late sowing often has more rust",
+    "Do not plant too densely; keep air moving between plants",
+    "Rotate crops and remove old crop residue"
+   ],
+   "hi": [
+    "रस्ट सहनशील मक्का किस्में / संकर चुनें",
+    "समय पर बुवाई करें; बहुत देर से बोई फसल में रस्ट अक्सर ज्यादा होता है",
+    "बहुत घनी बुवाई न करें; पौधों के बीच हवा चलने दें",
+    "फसल चक्र अपनाएं और पुराने फसल अवशेष हटाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Check the field every few days to see whether the rust is spreading upward to new leaves",
+    "Mild rust on a few lower leaves often does not need action",
+    "If it is spreading fast, ask your local agriculture office whether treatment is advised and what is approved"
+   ],
+   "hi": [
+    "हर कुछ दिन में खेत देखें कि रस्ट ऊपर की नई पत्तियों तक फैल रहा है या नहीं",
+    "कुछ निचली पत्तियों पर हल्का रस्ट अक्सर किसी कार्रवाई की मांग नहीं करता",
+    "यदि तेजी से फैल रहा हो तो स्थानीय कृषि कार्यालय से पूछें कि उपचार जरूरी है या नहीं और कौन सा मान्य है"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Keep soil moisture even; avoid water stress, which weakens plants",
+    "Water early in the day so leaves dry quickly"
+   ],
+   "hi": [
+    "मिट्टी में नमी एक-सी रखें; पानी की कमी से पौधे कमजोर होते हैं",
+    "सुबह जल्दी सिंचाई करें ताकि पत्ते जल्दी सूख जाएं"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Maize needs plenty of nitrogen, plus phosphorus, potassium and zinc; follow a soil test",
+    "Balanced feeding helps plants outgrow leaf damage"
+   ],
+   "hi": [
+    "मक्का को भरपूर नाइट्रोजन के साथ फॉस्फोरस, पोटैशियम और जिंक चाहिए; मिट्टी जांच के अनुसार खाद दें",
+    "संतुलित खाद से पौधे पत्तों के नुकसान से उबर पाते हैं"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "Rust reaches the upper leaves near the cob before grain filling",
+    "Large parts of the field are affected",
+    "You want advice on approved treatment"
+   ],
+   "hi": [
+    "दाना भरने से पहले रस्ट भुट्टे के पास की ऊपरी पत्तियों तक पहुंच जाए",
+    "खेत का बड़ा हिस्सा प्रभावित हो",
+    "आपको मान्य उपचार की सलाह चाहिए"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not save seed from a badly affected field without advice",
+    "Do not spray without reading the label"
+   ],
+   "hi": [
+    "सलाह के बिना ज्यादा प्रभावित खेत से बीज न रखें",
+    "लेबल पढ़े बिना स्प्रे न करें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Potato___Early_blight": {
+  "class_name": "Potato___Early_blight",
+  "crop": "Potato",
+  "is_healthy": false,
+  "urgency": "act_soon",
+  "condition": {
+   "en": "Early Blight",
+   "hi": "आलू का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+  },
+  "what_is_it": {
+   "en": "The leaf shows signs that look like early blight, a fungal disease that makes brown spots with ring patterns, usually on older leaves first.",
+   "hi": "पत्ते पर अगेती झुलसा जैसे निशान दिख रहे हैं। यह फफूंद रोग भूरे धब्बे बनाता है जिनमें छल्ले जैसा पैटर्न होता है, आमतौर पर पहले पुराने पत्तों पर।"
+  },
+  "symptoms": {
+   "en": [
+    "Dark brown spots with ring patterns (like a target) on older, lower leaves",
+    "Yellowing around the spots",
+    "Badly affected leaves dry up and fall"
+   ],
+   "hi": [
+    "पुराने, निचले पत्तों पर गहरे भूरे धब्बे जिनमें छल्ले (निशाने जैसे घेरे) दिखते हैं",
+    "धब्बों के आसपास पत्ता पीला पड़ सकता है",
+    "ज्यादा प्रभावित पत्ते सूखकर झड़ जाते हैं"
+   ]
+  },
+  "possible_cause": {
+   "en": "A fungus that survives on old plant residue and in soil. It spreads by wind and splash and is stronger on stressed or poorly fed plants in warm, humid weather.",
+   "hi": "एक फफूंद जो पुराने पौधों के अवशेष और मिट्टी में जीवित रहती है। यह हवा और छींटों से फैलती है और गर्म, नम मौसम में तनाव वाले या कम पोषण पाने वाले पौधों पर ज्यादा असर करती है।"
+  },
+  "prevention": {
+   "en": [
+    "Use healthy, certified seed tubers",
+    "Rotate crops; do not plant potato or tomato in the same field year after year",
+    "Remove and destroy crop residue and volunteer plants after harvest"
+   ],
+   "hi": [
+    "स्वस्थ, प्रमाणित बीज कंद लें",
+    "फसल चक्र अपनाएं; एक ही खेत में हर साल आलू या टमाटर न लगाएं",
+    "कटाई के बाद फसल अवशेष और अपने-आप उगे पौधे हटाकर नष्ट करें"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Remove the worst-affected lower leaves and keep them out of the field",
+    "Watch whether spots keep spreading upward",
+    "Ask your local agriculture office whether treatment is needed and which product is approved"
+   ],
+   "hi": [
+    "सबसे ज्यादा प्रभावित निचली पत्तियां हटाकर खेत से बाहर रखें",
+    "देखें कि धब्बे ऊपर की ओर फैल रहे हैं या नहीं",
+    "स्थानीय कृषि कार्यालय से पूछें कि उपचार जरूरी है या नहीं और कौन सी दवा मान्य है"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Give steady, even watering; avoid drought stress and waterlogging",
+    "Water in the morning and avoid wetting the leaves"
+   ],
+   "hi": [
+    "नियमित और बराबर सिंचाई करें; सूखे और जलभराव से बचें",
+    "सुबह पानी दें और पत्तों को गीला करने से बचें"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Well-fed plants resist early blight better; follow a soil test",
+    "Potato needs good potassium and phosphorus; avoid both nitrogen shortage and too much nitrogen"
+   ],
+   "hi": [
+    "अच्छे पोषण वाले पौधे अगेती झुलसा का बेहतर सामना करते हैं; मिट्टी जांच के अनुसार खाद दें",
+    "आलू को पर्याप्त पोटैशियम और फॉस्फोरस चाहिए; नाइट्रोजन की कमी और अधिकता दोनों से बचें"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "Spots are spreading quickly upward",
+    "Many plants in the field are affected",
+    "You are unsure if it is early or late blight"
+   ],
+   "hi": [
+    "धब्बे तेजी से ऊपर फैल रहे हों",
+    "खेत के कई पौधे प्रभावित हों",
+    "आपको पक्का न हो कि यह अगेती है या पछेती झुलसा"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not leave infected leaves and residue in the field",
+    "Do not skip proper spacing; crowded plants stay wet longer"
+   ],
+   "hi": [
+    "संक्रमित पत्ते और अवशेष खेत में न छोड़ें",
+    "उचित दूरी न छोड़ें; घने पौधे ज्यादा देर तक गीले रहते हैं"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Potato___Late_blight": {
+  "class_name": "Potato___Late_blight",
+  "crop": "Potato",
+  "is_healthy": false,
+  "urgency": "act_fast",
+  "condition": {
+   "en": "Late Blight",
+   "hi": "आलू का पछेती झुलसा रोग (लेट ब्लाइट)"
+  },
+  "what_is_it": {
+   "en": "The leaf shows signs that look like late blight. This disease can spread very fast in cool, wet weather and can destroy a crop, so please act quickly.",
+   "hi": "पत्ते पर पछेती झुलसा जैसे निशान दिख रहे हैं। यह रोग ठंडे, नम मौसम में बहुत तेजी से फैलता है और फसल को बर्बाद कर सकता है, इसलिए जल्दी कदम उठाएं।"
+  },
+  "symptoms": {
+   "en": [
+    "Pale green to dark brown, water-soaked patches on leaves, often starting at the edges",
+    "White fuzzy growth on the underside of leaves in humid weather",
+    "Stems can turn dark; tubers can develop firm brown rot"
+   ],
+   "hi": [
+    "पत्तों पर हल्के हरे से गहरे भूरे, पानी से भीगे धब्बे, अक्सर किनारों से शुरू होते हैं",
+    "नम मौसम में पत्तियों की निचली सतह पर सफेद रूई जैसी फफूंद",
+    "तने काले पड़ सकते हैं; कंदों में सख्त भूरी सड़न हो सकती है"
+   ]
+  },
+  "possible_cause": {
+   "en": "A water-mold organism (Phytophthora) that spreads by wind and rain from infected plants, tubers and old potato piles. Cool nights, fog, dew and rain make it spread very quickly.",
+   "hi": "एक जल-फफूंद जैसा जीव (फाइटोफ्थोरा) जो संक्रमित पौधों, कंदों और पुराने आलू के ढेरों से हवा और बारिश के साथ फैलता है। ठंडी रातें, कोहरा, ओस और बारिश इसे बहुत तेजी से फैलाते हैं।"
+  },
+  "prevention": {
+   "en": [
+    "Plant only healthy, certified seed tubers",
+    "Destroy cull piles and volunteer potato plants",
+    "Watch the weather; cool, foggy, wet spells are high risk, so check the field often",
+    "Plant in well-drained soil with good spacing"
+   ],
+   "hi": [
+    "केवल स्वस्थ, प्रमाणित बीज कंद लगाएं",
+    "बेकार आलू के ढेर और अपने-आप उगे आलू के पौधे नष्ट करें",
+    "मौसम पर नजर रखें; ठंडा, कोहरे वाला, नम मौसम खतरनाक है, इसलिए खेत बार-बार देखें",
+    "अच्छे जल-निकास वाली मिट्टी में उचित दूरी पर लगाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Contact your local agriculture office / KVK today; timing matters a lot for this disease",
+    "Remove and destroy affected plants or shoots in small patches, away from the field",
+    "Do not store tubers from badly infected plants together with healthy ones"
+   ],
+   "hi": [
+    "आज ही अपने स्थानीय कृषि कार्यालय / KVK से संपर्क करें; इस रोग में समय बहुत मायने रखता है",
+    "छोटे हिस्सों में प्रभावित पौधे या टहनियां हटाकर खेत से दूर नष्ट करें",
+    "बहुत संक्रमित पौधों के कंदों को स्वस्थ कंदों के साथ न रखें"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Avoid overhead watering and evening watering",
+    "Do not let water stand in the field"
+   ],
+   "hi": [
+    "ऊपर से और शाम को सिंचाई से बचें",
+    "खेत में पानी खड़ा न रहने दें"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Avoid too much nitrogen; it makes thick, soft growth that stays wet",
+    "Keep potassium and phosphorus adequate based on a soil test"
+   ],
+   "hi": [
+    "ज्यादा नाइट्रोजन से बचें; इससे घना, नरम विकास होता है जो देर तक गीला रहता है",
+    "मिट्टी जांच के अनुसार पोटैशियम और फॉस्फोरस पर्याप्त रखें"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "Right away if you see these signs, especially in cool, wet weather",
+    "If the disease is in more than a few plants",
+    "Before harvest and storage, to ask how to protect tubers"
+   ],
+   "hi": [
+    "ये निशान दिखते ही तुरंत, खासकर ठंडे, नम मौसम में",
+    "यदि रोग कुछ ही पौधों से ज्यादा में हो",
+    "कटाई और भंडारण से पहले, कंदों को बचाने का तरीका पूछने के लिए"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not wait and watch for many days",
+    "Do not compost or throw infected plants near the field",
+    "Do not use tubers from an infected field as seed"
+   ],
+   "hi": [
+    "कई दिन तक सिर्फ देखते न रहें",
+    "संक्रमित पौधों को खेत के पास खाद या कचरे में न डालें",
+    "संक्रमित खेत के कंद बीज के रूप में न रखें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Tomato___Early_blight": {
+  "class_name": "Tomato___Early_blight",
+  "crop": "Tomato",
+  "is_healthy": false,
+  "urgency": "act_soon",
+  "condition": {
+   "en": "Early Blight",
+   "hi": "टमाटर का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+  },
+  "what_is_it": {
+   "en": "The leaf shows signs that look like early blight, a fungal disease that makes brown spots with ring patterns, usually starting on the lower leaves.",
+   "hi": "पत्ते पर अगेती झुलसा जैसे निशान दिख रहे हैं। यह फफूंद रोग भूरे, छल्ले जैसे धब्बे बनाता है, आमतौर पर निचली पत्तियों से शुरू होता है।"
+  },
+  "symptoms": {
+   "en": [
+    "Brown spots with ring patterns (like a target) on lower leaves",
+    "Yellow area around the spots; leaves dry and fall",
+    "Dark sunken spots near the stem end of fruit can occur"
+   ],
+   "hi": [
+    "निचली पत्तियों पर भूरे धब्बे जिनमें छल्ले (निशाने जैसे घेरे) दिखते हैं",
+    "धब्बों के आसपास पीला हिस्सा; पत्ते सूखकर झड़ते हैं",
+    "फल के डंठल वाले सिरे के पास गहरे धंसे धब्बे हो सकते हैं"
+   ]
+  },
+  "possible_cause": {
+   "en": "A fungus that lives on old plant residue and in soil and splashes up onto lower leaves with rain or watering. It is stronger in warm, humid weather and on stressed plants.",
+   "hi": "एक फफूंद जो पुराने पौधों के अवशेष और मिट्टी में रहती है और बारिश या सिंचाई के छींटों से निचली पत्तियों पर पहुंचती है। गर्म, नम मौसम में और तनाव वाले पौधों पर यह ज्यादा असर करती है।"
+  },
+  "prevention": {
+   "en": [
+    "Stake or support plants so leaves stay off the soil",
+    "Mulch the soil to reduce splash",
+    "Rotate; do not grow tomato, potato or brinjal in the same spot every year",
+    "Clean up plant residue after harvest"
+   ],
+   "hi": [
+    "पौधों को सहारा दें ताकि पत्ते मिट्टी को न छुएं",
+    "छींटे कम करने के लिए मिट्टी पर मल्च बिछाएं",
+    "फसल चक्र अपनाएं; हर साल एक ही जगह टमाटर, आलू या बैंगन न लगाएं",
+    "कटाई के बाद पौधों के अवशेष साफ करें"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Remove the lowest affected leaves and keep them out of the field",
+    "Keep plants spaced and pruned for air movement",
+    "Ask your local agriculture office whether treatment is needed and which product is approved"
+   ],
+   "hi": [
+    "सबसे निचली प्रभावित पत्तियां हटाकर खेत से बाहर रखें",
+    "हवा के लिए पौधों में दूरी और छंटाई रखें",
+    "स्थानीय कृषि कार्यालय से पूछें कि उपचार जरूरी है या नहीं और कौन सी दवा मान्य है"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Water at the base or by drip; avoid wetting the leaves",
+    "Water in the morning; keep watering even so plants are not stressed"
+   ],
+   "hi": [
+    "जड़ के पास या ड्रिप से पानी दें; पत्तों को गीला न करें",
+    "सुबह पानी दें; सिंचाई बराबर रखें ताकि पौधों पर तनाव न पड़े"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Well-fed plants resist better; follow a soil test",
+    "Tomato needs nitrogen, phosphorus, potassium plus calcium and magnesium; avoid both starvation and heavy nitrogen"
+   ],
+   "hi": [
+    "अच्छे पोषण वाले पौधे बेहतर सामना करते हैं; मिट्टी जांच के अनुसार खाद दें",
+    "टमाटर को नाइट्रोजन, फॉस्फोरस, पोटैशियम के साथ कैल्शियम और मैग्नीशियम चाहिए; कमी और ज्यादा नाइट्रोजन दोनों से बचें"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "Spots spread to upper leaves, stems or fruit",
+    "Many plants are affected",
+    "You are unsure if it is early blight or late blight"
+   ],
+   "hi": [
+    "धब्बे ऊपरी पत्तों, तनों या फलों तक फैल जाएं",
+    "कई पौधे प्रभावित हों",
+    "आपको पक्का न हो कि यह अगेती है या पछेती झुलसा"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not water over the leaves",
+    "Do not leave infected leaves lying on the ground",
+    "Do not touch healthy plants right after handling sick ones without washing hands"
+   ],
+   "hi": [
+    "पत्तों के ऊपर से पानी न डालें",
+    "संक्रमित पत्ते जमीन पर न छोड़ें",
+    "बीमार पौधे छूने के बाद हाथ धोए बिना स्वस्थ पौधे न छुएं"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Tomato___Late_blight": {
+  "class_name": "Tomato___Late_blight",
+  "crop": "Tomato",
+  "is_healthy": false,
+  "urgency": "act_fast",
+  "condition": {
+   "en": "Late Blight",
+   "hi": "टमाटर का पछेती झुलसा रोग (लेट ब्लाइट)"
+  },
+  "what_is_it": {
+   "en": "The leaf shows signs that look like late blight. This disease can spread very fast in cool, wet weather and can destroy plants and fruit, so please act quickly.",
+   "hi": "पत्ते पर पछेती झुलसा जैसे निशान दिख रहे हैं। यह रोग ठंडे, नम मौसम में बहुत तेजी से फैलता है और पौधों व फलों को नष्ट कर सकता है, इसलिए जल्दी कदम उठाएं।"
+  },
+  "symptoms": {
+   "en": [
+    "Large, greasy, grey-green to brown patches on leaves",
+    "White fuzzy growth under leaves in humid weather",
+    "Dark stem spots; firm brown rot on fruit"
+   ],
+   "hi": [
+    "पत्तों पर बड़े, चिकने, स्लेटी-हरे से भूरे धब्बे",
+    "नम मौसम में पत्तियों के नीचे सफेद रूई जैसी फफूंद",
+    "तनों पर गहरे धब्बे; फलों पर सख्त भूरी सड़न"
+   ]
+  },
+  "possible_cause": {
+   "en": "A water-mold organism (Phytophthora) that spreads by wind and rain, and is the same kind of disease as potato late blight. Cool nights, dew, fog and rain make it spread fast.",
+   "hi": "एक जल-फफूंद जैसा जीव (फाइटोफ्थोरा) जो हवा और बारिश से फैलता है और आलू के पछेती झुलसा जैसा ही रोग है। ठंडी रातें, ओस, कोहरा और बारिश इसे तेजी से फैलाते हैं।"
+  },
+  "prevention": {
+   "en": [
+    "Use healthy seedlings and give plants good spacing and support",
+    "Do not grow tomato next to potato fields with disease",
+    "Check plants often in cool, wet, foggy weather",
+    "Remove old plants and residue after the season"
+   ],
+   "hi": [
+    "स्वस्थ पौध लें और पौधों को उचित दूरी व सहारा दें",
+    "रोगग्रस्त आलू के खेत के पास टमाटर न लगाएं",
+    "ठंडे, नम, कोहरे वाले मौसम में पौधों को बार-बार देखें",
+    "मौसम के बाद पुराने पौधे और अवशेष हटाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Contact your local agriculture office / KVK today; speed matters",
+    "Remove and destroy badly affected plants or shoots away from the field",
+    "Pick fruit that is still healthy if the field is heavily affected, and keep it apart from sick fruit"
+   ],
+   "hi": [
+    "आज ही स्थानीय कृषि कार्यालय / KVK से संपर्क करें; गति जरूरी है",
+    "ज्यादा प्रभावित पौधे या टहनियां हटाकर खेत से दूर नष्ट करें",
+    "यदि खेत बहुत प्रभावित हो तो जो फल अभी स्वस्थ हैं उन्हें तोड़ें और बीमार फलों से अलग रखें"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Water at the base or by drip in the morning; never wet the leaves in the evening",
+    "Do not let water stand around plants"
+   ],
+   "hi": [
+    "सुबह जड़ के पास या ड्रिप से पानी दें; शाम को पत्ते कभी गीले न करें",
+    "पौधों के आसपास पानी खड़ा न रहने दें"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Avoid too much nitrogen; it gives soft, thick growth that stays wet",
+    "Keep phosphorus, potassium and calcium adequate based on a soil test"
+   ],
+   "hi": [
+    "ज्यादा नाइट्रोजन से बचें; इससे नरम, घना विकास होता है जो गीला रहता है",
+    "मिट्टी जांच के अनुसार फॉस्फोरस, पोटैशियम और कैल्शियम पर्याप्त रखें"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "Right away if you see these signs, especially in cool, wet weather",
+    "If more than a few plants show symptoms",
+    "Before you decide to replant in the same field"
+   ],
+   "hi": [
+    "ये निशान दिखते ही तुरंत, खासकर ठंडे, नम मौसम में",
+    "यदि कुछ ही पौधों से ज्यादा में लक्षण हों",
+    "उसी खेत में दोबारा रोपाई का फैसला करने से पहले"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not wait many days before acting",
+    "Do not compost infected plants or throw them next to the field",
+    "Do not water over the leaves"
+   ],
+   "hi": [
+    "कार्रवाई से पहले कई दिन इंतजार न करें",
+    "संक्रमित पौधों की खाद न बनाएं और उन्हें खेत के पास न फेंकें",
+    "पत्तों के ऊपर से पानी न डालें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Corn___healthy": {
+  "class_name": "Corn___healthy",
+  "crop": "Corn",
+  "is_healthy": true,
+  "urgency": "none",
+  "condition": {
+   "en": "Healthy",
+   "hi": "स्वस्थ"
+  },
+  "what_is_it": {
+   "en": "This corn leaf looks healthy. No sign of the diseases this model knows was found.",
+   "hi": "यह मक्का का पत्ता स्वस्थ दिख रहा है। इस मॉडल को जिन रोगों की पहचान आती है, उनका कोई निशान नहीं मिला।"
+  },
+  "symptoms": {
+   "en": [
+    "Even green colour",
+    "No spots, patches, powder or mould",
+    "Normal leaf shape and texture"
+   ],
+   "hi": [
+    "एक-सा हरा रंग",
+    "कोई धब्बे, चकत्ते, पाउडर या फफूंद नहीं",
+    "पत्ते का आकार और बनावट सामान्य"
+   ]
+  },
+  "possible_cause": {
+   "en": "Nothing wrong was detected. Note: the AI checks only the diseases it was trained on, so a healthy result does not rule out other problems such as pests, nutrient shortage or diseases it does not know.",
+   "hi": "कोई समस्या नहीं मिली। ध्यान दें: AI केवल उन्हीं रोगों की जांच करता है जिन पर उसे सिखाया गया है, इसलिए 'स्वस्थ' का मतलब यह नहीं कि कीट, पोषण की कमी या अन्य अज्ञात रोग नहीं हैं।"
+  },
+  "prevention": {
+   "en": [
+    "Check plants regularly, especially after rain or humid weather",
+    "Keep the field clean of weeds and old residue",
+    "Use clean seed / seedlings and rotate crops"
+   ],
+   "hi": [
+    "पौधों को नियमित देखें, खासकर बारिश या नमी के बाद",
+    "खेत को खरपतवार और पुराने अवशेषों से साफ रखें",
+    "साफ बीज / पौध लें और फसल चक्र अपनाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Sow on time with good spacing",
+    "Control weeds early so plants do not compete"
+   ],
+   "hi": [
+    "समय पर उचित दूरी पर बुवाई करें",
+    "खरपतवार जल्दी हटाएं ताकि पौधों से होड़ न करें"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Keep moisture even, especially at flowering and grain filling"
+   ],
+   "hi": [
+    "नमी एक-सी रखें, खासकर फूल आने और दाना भरने के समय"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Maize needs plenty of nitrogen; also phosphorus, potassium and zinc (follow a soil test)"
+   ],
+   "hi": [
+    "मक्का को भरपूर नाइट्रोजन चाहिए; साथ ही फॉस्फोरस, पोटैशियम और जिंक (मिट्टी जांच के अनुसार)"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "You see new spots, yellowing, curling or wilting",
+    "Many plants show the same problem",
+    "You see insects or damage the app does not explain"
+   ],
+   "hi": [
+    "नए धब्बे, पीलापन, मुड़ना या मुरझाना दिखे",
+    "कई पौधों में एक जैसी समस्या हो",
+    "कीट या ऐसा नुकसान दिखे जिसे ऐप नहीं बताता"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not spray 'just in case' when plants are healthy",
+    "Do not over-water or over-fertilize"
+   ],
+   "hi": [
+    "पौधे स्वस्थ हों तो 'बस यूं ही' स्प्रे न करें",
+    "ज्यादा पानी या ज्यादा खाद न दें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Potato___healthy": {
+  "class_name": "Potato___healthy",
+  "crop": "Potato",
+  "is_healthy": true,
+  "urgency": "none",
+  "condition": {
+   "en": "Healthy",
+   "hi": "स्वस्थ"
+  },
+  "what_is_it": {
+   "en": "This potato leaf looks healthy. No sign of the diseases this model knows was found.",
+   "hi": "यह आलू का पत्ता स्वस्थ दिख रहा है। इस मॉडल को जिन रोगों की पहचान आती है, उनका कोई निशान नहीं मिला।"
+  },
+  "symptoms": {
+   "en": [
+    "Even green colour",
+    "No spots, patches, powder or mould",
+    "Normal leaf shape and texture"
+   ],
+   "hi": [
+    "एक-सा हरा रंग",
+    "कोई धब्बे, चकत्ते, पाउडर या फफूंद नहीं",
+    "पत्ते का आकार और बनावट सामान्य"
+   ]
+  },
+  "possible_cause": {
+   "en": "Nothing wrong was detected. Note: the AI checks only the diseases it was trained on, so a healthy result does not rule out other problems such as pests, nutrient shortage or diseases it does not know.",
+   "hi": "कोई समस्या नहीं मिली। ध्यान दें: AI केवल उन्हीं रोगों की जांच करता है जिन पर उसे सिखाया गया है, इसलिए 'स्वस्थ' का मतलब यह नहीं कि कीट, पोषण की कमी या अन्य अज्ञात रोग नहीं हैं।"
+  },
+  "prevention": {
+   "en": [
+    "Check plants regularly, especially after rain or humid weather",
+    "Keep the field clean of weeds and old residue",
+    "Use clean seed / seedlings and rotate crops"
+   ],
+   "hi": [
+    "पौधों को नियमित देखें, खासकर बारिश या नमी के बाद",
+    "खेत को खरपतवार और पुराने अवशेषों से साफ रखें",
+    "साफ बीज / पौध लें और फसल चक्र अपनाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Earth up soil around stems so tubers stay covered",
+    "Use certified seed tubers each season"
+   ],
+   "hi": [
+    "तनों के पास मिट्टी चढ़ाएं ताकि कंद ढके रहें",
+    "हर मौसम में प्रमाणित बीज कंद लें"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Steady, moderate watering; avoid waterlogging that rots tubers"
+   ],
+   "hi": [
+    "नियमित, संतुलित सिंचाई; जलभराव से बचें जिससे कंद सड़ते हैं"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Potassium and phosphorus are important; avoid too much nitrogen (follow a soil test)"
+   ],
+   "hi": [
+    "पोटैशियम और फॉस्फोरस जरूरी हैं; ज्यादा नाइट्रोजन से बचें (मिट्टी जांच के अनुसार)"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "You see new spots, yellowing, curling or wilting",
+    "Many plants show the same problem",
+    "You see insects or damage the app does not explain"
+   ],
+   "hi": [
+    "नए धब्बे, पीलापन, मुड़ना या मुरझाना दिखे",
+    "कई पौधों में एक जैसी समस्या हो",
+    "कीट या ऐसा नुकसान दिखे जिसे ऐप नहीं बताता"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not spray 'just in case' when plants are healthy",
+    "Do not over-water or over-fertilize"
+   ],
+   "hi": [
+    "पौधे स्वस्थ हों तो 'बस यूं ही' स्प्रे न करें",
+    "ज्यादा पानी या ज्यादा खाद न दें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Tomato___healthy": {
+  "class_name": "Tomato___healthy",
+  "crop": "Tomato",
+  "is_healthy": true,
+  "urgency": "none",
+  "condition": {
+   "en": "Healthy",
+   "hi": "स्वस्थ"
+  },
+  "what_is_it": {
+   "en": "This tomato leaf looks healthy. No sign of the diseases this model knows was found.",
+   "hi": "यह टमाटर का पत्ता स्वस्थ दिख रहा है। इस मॉडल को जिन रोगों की पहचान आती है, उनका कोई निशान नहीं मिला।"
+  },
+  "symptoms": {
+   "en": [
+    "Even green colour",
+    "No spots, patches, powder or mould",
+    "Normal leaf shape and texture"
+   ],
+   "hi": [
+    "एक-सा हरा रंग",
+    "कोई धब्बे, चकत्ते, पाउडर या फफूंद नहीं",
+    "पत्ते का आकार और बनावट सामान्य"
+   ]
+  },
+  "possible_cause": {
+   "en": "Nothing wrong was detected. Note: the AI checks only the diseases it was trained on, so a healthy result does not rule out other problems such as pests, nutrient shortage or diseases it does not know.",
+   "hi": "कोई समस्या नहीं मिली। ध्यान दें: AI केवल उन्हीं रोगों की जांच करता है जिन पर उसे सिखाया गया है, इसलिए 'स्वस्थ' का मतलब यह नहीं कि कीट, पोषण की कमी या अन्य अज्ञात रोग नहीं हैं।"
+  },
+  "prevention": {
+   "en": [
+    "Check plants regularly, especially after rain or humid weather",
+    "Keep the field clean of weeds and old residue",
+    "Use clean seed / seedlings and rotate crops"
+   ],
+   "hi": [
+    "पौधों को नियमित देखें, खासकर बारिश या नमी के बाद",
+    "खेत को खरपतवार और पुराने अवशेषों से साफ रखें",
+    "साफ बीज / पौध लें और फसल चक्र अपनाएं"
+   ]
+  },
+  "basic_care": {
+   "en": [
+    "Stake plants and prune lower leaves that touch the soil",
+    "Mulch to keep soil off the leaves"
+   ],
+   "hi": [
+    "पौधों को सहारा दें और मिट्टी को छूने वाली निचली पत्तियां हटाएं",
+    "पत्तों को मिट्टी से बचाने के लिए मल्च बिछाएं"
+   ]
+  },
+  "watering_care": {
+   "en": [
+    "Even watering at the base; sudden dry-then-wet swings can crack fruit"
+   ],
+   "hi": [
+    "जड़ के पास एक-सी सिंचाई; अचानक सूखा-फिर-गीला होने से फल फट सकते हैं"
+   ]
+  },
+  "nutrient_guidance": {
+   "en": [
+    "Nitrogen, phosphorus, potassium plus calcium and magnesium (follow a soil test)"
+   ],
+   "hi": [
+    "नाइट्रोजन, फॉस्फोरस, पोटैशियम तथा कैल्शियम और मैग्नीशियम (मिट्टी जांच के अनुसार)"
+   ]
+  },
+  "consult_expert_when": {
+   "en": [
+    "You see new spots, yellowing, curling or wilting",
+    "Many plants show the same problem",
+    "You see insects or damage the app does not explain"
+   ],
+   "hi": [
+    "नए धब्बे, पीलापन, मुड़ना या मुरझाना दिखे",
+    "कई पौधों में एक जैसी समस्या हो",
+    "कीट या ऐसा नुकसान दिखे जिसे ऐप नहीं बताता"
+   ]
+  },
+  "avoid": {
+   "en": [
+    "Do not spray 'just in case' when plants are healthy",
+    "Do not over-water or over-fertilize"
+   ],
+   "hi": [
+    "पौधे स्वस्थ हों तो 'बस यूं ही' स्प्रे न करें",
+    "ज्यादा पानी या ज्यादा खाद न दें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ }
+}

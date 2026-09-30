@@ -1,0 +1,194 @@
+{
+ "Corn": {
+  "crop": "Corn",
+  "name": {
+   "en": "Corn (Maize)",
+   "hi": "मक्का"
+  },
+  "healthy_characteristics": {
+   "en": "Long, upright, deep-green leaves with no rust-coloured pustules, streaks or spots.",
+   "hi": "लंबे, सीधे, गहरे हरे पत्ते जिन पर जंग जैसे दाने, धारियां या धब्बे न हों।"
+  },
+  "diseases_in_dataset": [
+   {
+    "class_name": "Corn___Common_rust",
+    "name": {
+     "en": "Common Rust",
+     "hi": "मक्का का सामान्य रस्ट (जंग रोग)"
+    }
+   }
+  ],
+  "basic_care": {
+   "en": [
+    "Warm-season crop needing full sun and fertile, well-drained soil",
+    "Needs even moisture, especially at tasselling and grain filling",
+    "Good weed control early in the season"
+   ],
+   "hi": [
+    "गर्म मौसम की फसल; पूरी धूप और उपजाऊ, अच्छे जल-निकास वाली मिट्टी चाहिए",
+    "खासकर मंजरी आने और दाना भरने के समय बराबर नमी चाहिए",
+    "शुरुआत में अच्छा खरपतवार नियंत्रण"
+   ]
+  },
+  "important_nutrients": {
+   "en": [
+    "Nitrogen (high demand)",
+    "Phosphorus, potassium, zinc"
+   ],
+   "hi": [
+    "नाइट्रोजन (ज्यादा जरूरत)",
+    "फॉस्फोरस, पोटैशियम, जिंक"
+   ]
+  },
+  "prevention_tips": {
+   "en": [
+    "Use tolerant hybrids",
+    "Sow on time",
+    "Avoid crowding",
+    "Rotate crops"
+   ],
+   "hi": [
+    "सहनशील संकर किस्में लें",
+    "समय पर बुवाई करें",
+    "घनी बुवाई से बचें",
+    "फसल चक्र अपनाएं"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Potato": {
+  "crop": "Potato",
+  "name": {
+   "en": "Potato",
+   "hi": "आलू"
+  },
+  "healthy_characteristics": {
+   "en": "Deep-green leaves with no brown spots, water-soaked patches or white mould underneath.",
+   "hi": "गहरे हरे पत्ते जिन पर भूरे धब्बे, पानी-भीगे चकत्ते या नीचे सफेद फफूंद न हो।"
+  },
+  "diseases_in_dataset": [
+   {
+    "class_name": "Potato___Early_blight",
+    "name": {
+     "en": "Early Blight",
+     "hi": "आलू का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+    }
+   },
+   {
+    "class_name": "Potato___Late_blight",
+    "name": {
+     "en": "Late Blight",
+     "hi": "आलू का पछेती झुलसा रोग (लेट ब्लाइट)"
+    }
+   }
+  ],
+  "basic_care": {
+   "en": [
+    "Cool-season crop; loose, well-drained soil",
+    "Earth up soil so tubers stay covered",
+    "Steady watering; avoid waterlogging"
+   ],
+   "hi": [
+    "ठंडे मौसम की फसल; भुरभुरी, अच्छे जल-निकास वाली मिट्टी",
+    "मिट्टी चढ़ाएं ताकि कंद ढके रहें",
+    "नियमित सिंचाई; जलभराव से बचें"
+   ]
+  },
+  "important_nutrients": {
+   "en": [
+    "Potassium and phosphorus",
+    "Nitrogen in moderation"
+   ],
+   "hi": [
+    "पोटैशियम और फॉस्फोरस",
+    "नाइट्रोजन संतुलित मात्रा में"
+   ]
+  },
+  "prevention_tips": {
+   "en": [
+    "Certified seed tubers",
+    "Destroy cull piles and volunteers",
+    "Check often in cool, wet weather"
+   ],
+   "hi": [
+    "प्रमाणित बीज कंद",
+    "बेकार ढेर और अपने-आप उगे पौधे नष्ट करें",
+    "ठंडे, नम मौसम में बार-बार जांचें"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ },
+ "Tomato": {
+  "crop": "Tomato",
+  "name": {
+   "en": "Tomato",
+   "hi": "टमाटर"
+  },
+  "healthy_characteristics": {
+   "en": "Rich-green leaves with no brown ring spots, greasy patches or white mould underneath.",
+   "hi": "गहरे हरे पत्ते जिन पर भूरे छल्ले वाले धब्बे, चिकने चकत्ते या नीचे सफेद फफूंद न हो।"
+  },
+  "diseases_in_dataset": [
+   {
+    "class_name": "Tomato___Early_blight",
+    "name": {
+     "en": "Early Blight",
+     "hi": "टमाटर का अगेती झुलसा रोग (अर्ली ब्लाइट)"
+    }
+   },
+   {
+    "class_name": "Tomato___Late_blight",
+    "name": {
+     "en": "Late Blight",
+     "hi": "टमाटर का पछेती झुलसा रोग (लेट ब्लाइट)"
+    }
+   }
+  ],
+  "basic_care": {
+   "en": [
+    "Warm-season crop needing full sun and fertile, well-drained soil",
+    "Stake plants and mulch the soil",
+    "Even watering at the base"
+   ],
+   "hi": [
+    "गर्म मौसम की फसल; पूरी धूप और उपजाऊ, अच्छे जल-निकास वाली मिट्टी",
+    "पौधों को सहारा दें और मिट्टी पर मल्च बिछाएं",
+    "जड़ के पास बराबर सिंचाई"
+   ]
+  },
+  "important_nutrients": {
+   "en": [
+    "Nitrogen, phosphorus, potassium",
+    "Calcium and magnesium"
+   ],
+   "hi": [
+    "नाइट्रोजन, फॉस्फोरस, पोटैशियम",
+    "कैल्शियम और मैग्नीशियम"
+   ]
+  },
+  "prevention_tips": {
+   "en": [
+    "Stake and mulch",
+    "Rotate crops",
+    "Remove lower diseased leaves",
+    "Drip or base watering"
+   ],
+   "hi": [
+    "सहारा और मल्च",
+    "फसल चक्र",
+    "निचली रोगी पत्तियां हटाएं",
+    "ड्रिप या जड़ के पास सिंचाई"
+   ]
+  },
+  "source_note": {
+   "en": "General agricultural advice (not produced by the AI model). It contains no product names or doses. Always follow your local agriculture extension office / Krishi Vigyan Kendra (KVK) advice.",
+   "hi": "यह सामान्य कृषि सलाह है (AI मॉडल से नहीं आई)। इसमें कोई दवा का नाम या मात्रा नहीं दी गई है। हमेशा अपने स्थानीय कृषि विस्तार कार्यालय / कृषि विज्ञान केंद्र (KVK) की सलाह मानें।"
+  }
+ }
+}

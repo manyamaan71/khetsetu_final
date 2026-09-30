@@ -1,0 +1,34 @@
+# ---- secrets ----
+.env
+backend/.env
+*.pem
+
+# ---- frontend ----
+frontend/node_modules/
+frontend/dist/
+frontend/dev-dist/
+frontend/.vite/
+
+# ---- backend ----
+backend/venv/
+backend/.venv/
+venv/
+.venv*/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/*.db
+backend/khetsetu.db
+data/cache/
+
+# ---- ML: split/cache outputs are generated locally; source subset is included ----
+ml/dataset_split/
+ml/cache/
+# (the trained model in model/ IS small enough to commit; evaluation results too)
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

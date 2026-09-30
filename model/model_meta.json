@@ -1,0 +1,37 @@
+{
+  "model": "MobileNetV2 (alpha=1.0) transfer learning, ImageNet init",
+  "input_size": 224,
+  "input_note": "raw RGB pixels 0-255 (scaling to [-1,1] is inside the model)",
+  "class_names": [
+    "Corn___Common_rust",
+    "Corn___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Potato___healthy",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___healthy"
+  ],
+  "temperature": 1.1324,
+  "recommended_confidence_threshold": 0.7,
+  "val_accuracy": 0.9586,
+  "train_images": 6301,
+  "val_images": 1353,
+  "class_weights": {
+    "Corn___Common_rust": 0.944,
+    "Corn___healthy": 0.969,
+    "Potato___Early_blight": 1.125,
+    "Potato___Late_blight": 1.125,
+    "Potato___healthy": 7.43,
+    "Tomato___Early_blight": 1.125,
+    "Tomato___Late_blight": 0.59,
+    "Tomato___healthy": 0.708
+  },
+  "fine_tune_from_layer": 120,
+  "epochs": {
+    "head": 3,
+    "finetune": 2
+  },
+  "training_minutes": 20.1,
+  "trained_at": "2026-09-30 14:35:25"
+}

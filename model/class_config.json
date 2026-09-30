@@ -1,0 +1,102 @@
+{
+ "_comment": "SINGLE SOURCE OF TRUTH for class order/labels. Never reorder after training; retrain instead.",
+ "input_size": 224,
+ "classes": [
+  {
+   "index": 0,
+   "class_name": "Corn___Common_rust",
+   "source_folder": "Corn___Common_rust",
+   "crop": "Corn",
+   "crop_hi": "मक्का",
+   "disease": "Common Rust",
+   "disease_hi": "सामान्य रस्ट (जंग रोग)",
+   "is_healthy": false,
+   "scope": "mvp_substitute",
+   "note": "Guide lists Corn Northern Leaf Blight; it is NOT in the uploaded dataset, so Corn Common Rust (the only corn disease present) is used."
+  },
+  {
+   "index": 1,
+   "class_name": "Corn___healthy",
+   "source_folder": "Corn___healthy",
+   "crop": "Corn",
+   "crop_hi": "मक्का",
+   "disease": "Healthy",
+   "disease_hi": "स्वस्थ",
+   "is_healthy": true,
+   "scope": "companion",
+   "note": "Healthy counterpart so a healthy corn leaf is not forced into a disease class."
+  },
+  {
+   "index": 2,
+   "class_name": "Potato___Early_blight",
+   "source_folder": "Potato___Early_blight",
+   "crop": "Potato",
+   "crop_hi": "आलू",
+   "disease": "Early Blight",
+   "disease_hi": "अगेती झुलसा (अर्ली ब्लाइट)",
+   "is_healthy": false,
+   "scope": "mvp_core",
+   "note": ""
+  },
+  {
+   "index": 3,
+   "class_name": "Potato___Late_blight",
+   "source_folder": "Potato___Late_blight",
+   "crop": "Potato",
+   "crop_hi": "आलू",
+   "disease": "Late Blight",
+   "disease_hi": "पछेती झुलसा (लेट ब्लाइट)",
+   "is_healthy": false,
+   "scope": "mvp_core",
+   "note": ""
+  },
+  {
+   "index": 4,
+   "class_name": "Potato___healthy",
+   "source_folder": "Potato___healthy",
+   "crop": "Potato",
+   "crop_hi": "आलू",
+   "disease": "Healthy",
+   "disease_hi": "स्वस्थ",
+   "is_healthy": true,
+   "scope": "companion",
+   "note": "Healthy counterpart so a healthy potato leaf is not forced into a blight class."
+  },
+  {
+   "index": 5,
+   "class_name": "Tomato___Early_blight",
+   "source_folder": "Tomato___Early_blight",
+   "crop": "Tomato",
+   "crop_hi": "टमाटर",
+   "disease": "Early Blight",
+   "disease_hi": "अगेती झुलसा (अर्ली ब्लाइट)",
+   "is_healthy": false,
+   "scope": "companion",
+   "note": "Visually similar to potato early blight; included to avoid mislabelling tomato leaves."
+  },
+  {
+   "index": 6,
+   "class_name": "Tomato___Late_blight",
+   "source_folder": "Tomato___Late_blight",
+   "crop": "Tomato",
+   "crop_hi": "टमाटर",
+   "disease": "Late Blight",
+   "disease_hi": "पछेती झुलसा (लेट ब्लाइट)",
+   "is_healthy": false,
+   "scope": "mvp_core",
+   "note": ""
+  },
+  {
+   "index": 7,
+   "class_name": "Tomato___healthy",
+   "source_folder": "Tomato___healthy",
+   "crop": "Tomato",
+   "crop_hi": "टमाटर",
+   "disease": "Healthy",
+   "disease_hi": "स्वस्थ",
+   "is_healthy": true,
+   "scope": "mvp_core",
+   "note": ""
+  }
+ ]
+}

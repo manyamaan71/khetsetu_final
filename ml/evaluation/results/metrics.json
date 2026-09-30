@@ -1,0 +1,208 @@
+{
+  "test_images": 1352,
+  "accuracy": 0.9534,
+  "macro": {
+    "precision": 0.9313,
+    "recall": 0.9582,
+    "f1": 0.9413
+  },
+  "weighted": {
+    "precision": 0.9561,
+    "recall": 0.9534,
+    "f1": 0.9535
+  },
+  "calibration": {
+    "temperature": 1.1324,
+    "ece_before": 0.0132,
+    "ece_after": 0.0147,
+    "mean_confidence_wrong": 0.7042,
+    "mean_confidence_right": 0.9692
+  },
+  "per_class": {
+    "Corn___Common_rust": {
+      "precision": 0.989,
+      "recall": 1.0,
+      "f1": 0.9944,
+      "support": 179
+    },
+    "Corn___healthy": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 174
+    },
+    "Potato___Early_blight": {
+      "precision": 1.0,
+      "recall": 0.9867,
+      "f1": 0.9933,
+      "support": 150
+    },
+    "Potato___Late_blight": {
+      "precision": 0.9645,
+      "recall": 0.9067,
+      "f1": 0.9347,
+      "support": 150
+    },
+    "Potato___healthy": {
+      "precision": 0.7188,
+      "recall": 1.0,
+      "f1": 0.8364,
+      "support": 23
+    },
+    "Tomato___Early_blight": {
+      "precision": 0.9028,
+      "recall": 0.8667,
+      "f1": 0.8844,
+      "support": 150
+    },
+    "Tomato___Late_blight": {
+      "precision": 0.9738,
+      "recall": 0.9059,
+      "f1": 0.9386,
+      "support": 287
+    },
+    "Tomato___healthy": {
+      "precision": 0.9019,
+      "recall": 1.0,
+      "f1": 0.9484,
+      "support": 239
+    }
+  },
+  "top_confusions": [
+    {
+      "count": 14,
+      "true": "Tomato___Early_blight",
+      "predicted": "Tomato___healthy"
+    },
+    {
+      "count": 11,
+      "true": "Tomato___Late_blight",
+      "predicted": "Tomato___healthy"
+    },
+    {
+      "count": 10,
+      "true": "Tomato___Late_blight",
+      "predicted": "Tomato___Early_blight"
+    },
+    {
+      "count": 9,
+      "true": "Potato___Late_blight",
+      "predicted": "Potato___healthy"
+    },
+    {
+      "count": 5,
+      "true": "Tomato___Early_blight",
+      "predicted": "Tomato___Late_blight"
+    },
+    {
+      "count": 4,
+      "true": "Tomato___Late_blight",
+      "predicted": "Potato___Late_blight"
+    },
+    {
+      "count": 2,
+      "true": "Tomato___Late_blight",
+      "predicted": "Corn___Common_rust"
+    },
+    {
+      "count": 2,
+      "true": "Potato___Late_blight",
+      "predicted": "Tomato___Late_blight"
+    }
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.5,
+      "answered_share": 0.9889,
+      "accuracy_when_answered": 0.9596,
+      "wrong_answers_shown": 54,
+      "correct_answers_withheld": 6
+    },
+    {
+      "threshold": 0.6,
+      "answered_share": 0.9697,
+      "accuracy_when_answered": 0.9672,
+      "wrong_answers_shown": 43,
+      "correct_answers_withheld": 21
+    },
+    {
+      "threshold": 0.7,
+      "answered_share": 0.9497,
+      "accuracy_when_answered": 0.9727,
+      "wrong_answers_shown": 35,
+      "correct_answers_withheld": 40
+    },
+    {
+      "threshold": 0.8,
+      "answered_share": 0.9231,
+      "accuracy_when_answered": 0.9848,
+      "wrong_answers_shown": 19,
+      "correct_answers_withheld": 60
+    },
+    {
+      "threshold": 0.9,
+      "answered_share": 0.8706,
+      "accuracy_when_answered": 0.9881,
+      "wrong_answers_shown": 14,
+      "correct_answers_withheld": 126
+    },
+    {
+      "threshold": 0.95,
+      "answered_share": 0.824,
+      "accuracy_when_answered": 0.9937,
+      "wrong_answers_shown": 7,
+      "correct_answers_withheld": 182
+    }
+  ],
+  "model_size_mb": {
+    "keras_mb": 9.65,
+    "tflite_mb": 8.91
+  },
+  "inference": {
+    "keras_avg_ms_batch1": 251.2,
+    "tflite": {
+      "accuracy": 0.9534,
+      "macro_f1": 0.9413,
+      "agreement_with_keras": 1.0,
+      "avg_inference_ms_batch1": 13.2
+    },
+    "measured_on": "Intel64 Family 6 Model 78 Stepping 3, GenuineIntel, Windows, TF 2.16.2, CPU only, 1 thread-pool"
+  },
+  "robustness_degraded_test_images": {
+    "blur": {
+      "accuracy": 0.8833,
+      "answered_share_at_threshold": 0.89,
+      "accuracy_when_answered": 0.9139
+    },
+    "dark": {
+      "accuracy": 0.91,
+      "answered_share_at_threshold": 0.8967,
+      "accuracy_when_answered": 0.9665
+    },
+    "bright": {
+      "accuracy": 0.93,
+      "answered_share_at_threshold": 0.9467,
+      "accuracy_when_answered": 0.9507
+    },
+    "low_jpeg": {
+      "accuracy": 0.87,
+      "answered_share_at_threshold": 0.8967,
+      "accuracy_when_answered": 0.9219
+    },
+    "small_crop": {
+      "accuracy": 0.6833,
+      "answered_share_at_threshold": 0.7667,
+      "accuracy_when_answered": 0.8043
+    }
+  },
+  "non_leaf_handling": {
+    "leaf_guard_min_ratio": 0.08,
+    "real_test_leaves_wrongly_rejected_by_guard": 0,
+    "real_test_leaves_total": 1352,
+    "synthetic_non_leaf_images": 200,
+    "synthetic_rejected_by_leaf_guard": 134,
+    "synthetic_passing_guard_and_threshold_(false_diagnosis)": 50,
+    "synthetic_passing_threshold_without_guard": 161
+  },
+  "caveat": "Test images come from the same lab-style dataset as training (split by duplicate cluster). Accuracy on real field photos (cluttered background, sunlight, different cameras) is expected to be LOWER."
+}
