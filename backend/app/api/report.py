@@ -12,9 +12,14 @@ router = APIRouter()
 
 
 @router.post("/report/pdf")
-async def create_pdf_report(image: UploadFile = File(...), language: str = Form("en")):
-    if language not in ("en", "hi"):
-        raise HTTPException(status_code=422, detail={"code": "unsupported_language"})
+async def create_pdf_report(
+    image: UploadFile = File(...),
+    language: str = Form("en"),
+    farmer_name: str | None = Form(None),
+):
+    supported_languages = ("en", "hi", "kn", "ta", "te", "mr", "bn")
+    if language not in supported_languages:
+        language = "en"
     if not classifier.available:
         raise HTTPException(status_code=503, detail={"code": "model_unavailable"})
 
@@ -26,7 +31,7 @@ async def create_pdf_report(image: UploadFile = File(...), language: str = Form(
 
     try:
         current_result = analyze_image(data, source="report", language=language)
-        pdf_bytes, report_id, date_stamp = make_report_pdf(data, current_result, language)
+        pdf_bytes, report_id, date_stamp = make_report_pdf(data, current_result, language, farmer_name)
     except InvalidImageError as exc:
         raise HTTPException(status_code=422, detail={"code": "invalid_image"}) from exc
 

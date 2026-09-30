@@ -34,16 +34,20 @@ def is_available() -> bool:
 
 def _guidance_context(guidance: dict, language: str) -> str:
     """Flatten the trusted guidance fields Gemini is allowed to draw on."""
-    lang = "hi" if language == "hi" else "en"
+    lang = language if language in ("hi", "kn", "ta", "te", "mr", "bn") else "en"
 
     def txt(key: str) -> str:
         val = guidance.get(key)
-        return (val or {}).get(lang, "") if isinstance(val, dict) else ""
+        if isinstance(val, dict):
+            return val.get(lang) or val.get("en") or ""
+        return ""
 
     def items(key: str) -> list[str]:
         val = guidance.get(key)
-        lst = (val or {}).get(lang, []) if isinstance(val, dict) else []
-        return list(lst)[:_MAX_LIST_ITEMS]
+        if isinstance(val, dict):
+            lst = val.get(lang) or val.get("en") or []
+            return list(lst)[:_MAX_LIST_ITEMS]
+        return []
 
     lines = [
         f"What it is: {txt('what_is_it')}",
@@ -71,7 +75,8 @@ def generate_extra_explanation(crop: str, disease: str, language: str = "en",
         genai.configure(api_key=settings.GEMINI_API_KEY)
         model = genai.GenerativeModel("gemini-1.5-flash")
 
-        lang_name = "Hindi" if language == "hi" else "English"
+        lang_map = {"en": "English", "hi": "Hindi", "kn": "Kannada", "ta": "Tamil", "te": "Telugu", "mr": "Marathi", "bn": "Bengali"}
+        lang_name = lang_map.get(language, "English")
         context = _guidance_context(guidance, language) if guidance else ""
         conf_pct = f"{confidence * 100:.0f}%" if confidence is not None else "unknown"
 

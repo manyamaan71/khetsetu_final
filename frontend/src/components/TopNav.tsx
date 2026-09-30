@@ -1,9 +1,10 @@
 import { NavLink, Link } from 'react-router-dom';
 import { Home, ScanLine, LineChart, History, Settings, Sprout, BookOpen } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from './LanguageSelector';
 
 export default function TopNav() {
-  const { t, language, setLanguage } = useLanguage();
+  const { t } = useLanguage();
 
   const items = [
     { to: '/', icon: Home, label: t('nav_home') },
@@ -41,24 +42,7 @@ export default function TopNav() {
         ))}
       </nav>
 
-      <div className="flex items-center gap-1 bg-leaf-50 rounded-full p-1">
-        <button
-          onClick={() => setLanguage('en')}
-          className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-            language === 'en' ? 'bg-white shadow text-leaf-800' : 'text-gray-500'
-          }`}
-        >
-          English
-        </button>
-        <button
-          onClick={() => setLanguage('hi')}
-          className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-            language === 'hi' ? 'bg-white shadow text-leaf-800' : 'text-gray-500'
-          }`}
-        >
-          हिंदी
-        </button>
-      </div>
+      <LanguageSelector variant="compact" />
     </header>
   );
 }

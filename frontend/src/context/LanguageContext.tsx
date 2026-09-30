@@ -1,38 +1,89 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Language } from '../types';
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
+import { Language, LanguageOption } from '../types';
 import { translations, TranslationKey } from '../data/translations';
+import { LANGUAGES, DEFAULT_LANGUAGE_CODE, isValidLanguageCode } from '../config/languages';
+import { useAuth } from './AuthContext';
 
 interface LanguageContextValue {
   language: Language;
-  setLanguage: (lang: Language) => void;
+  currentLanguage: Language;
+  setLanguage: (lang: Language) => Promise<void>;
+  availableLanguages: LanguageOption[];
   t: (key: TranslationKey) => string;
+  isSavingLanguage: boolean;
+  saveError: TranslationKey | null;
 }
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
-const STORAGE_KEY = 'khetsetu_language';
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved === 'hi' || saved === 'en' ? saved : 'en';
-  });
+  const { profile, isAuthenticated, loading, updateProfile } = useAuth();
+  const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE_CODE);
+  const [isSavingLanguage, setIsSavingLanguage] = useState(false);
+  const [saveError, setSaveError] = useState<TranslationKey | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, language);
+    if (loading) return;
+    if (isAuthenticated && isValidLanguageCode(profile?.preferred_language)) {
+      setLanguageState(profile.preferred_language);
+    } else if (!isAuthenticated) {
+      setLanguageState(DEFAULT_LANGUAGE_CODE);
+    }
+  }, [isAuthenticated, loading, profile?.preferred_language]);
+
+  useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
 
-  const setLanguage = (lang: Language) => setLanguageState(lang);
+  const setLanguage = useCallback(
+    async (nextLang: Language) => {
+      const validLang = isValidLanguageCode(nextLang) ? nextLang : DEFAULT_LANGUAGE_CODE;
+      setLanguageState(validLang);
+      document.documentElement.lang = validLang;
+      setSaveError(null);
 
-  const t = (key: TranslationKey): string => {
-    const entry = translations[key];
-    if (!entry) return key;
-    return entry[language] ?? entry.en;
-  };
+      if (!isAuthenticated || !profile || profile.preferred_language === validLang) return;
+
+      setIsSavingLanguage(true);
+      try {
+        await updateProfile({ preferred_language: validLang });
+      } catch (err) {
+        if (import.meta.env.DEV) console.error('Failed to save preferred_language to Supabase:', err);
+        setSaveError('language_save_error');
+      } finally {
+        setIsSavingLanguage(false);
+      }
+    },
+    [isAuthenticated, profile?.preferred_language, updateProfile]
+  );
+
+  const t = useCallback(
+    (key: TranslationKey): string => {
+      const entry = translations[key] as Record<string, string> | undefined;
+      if (!entry) return key as string;
+      const localized = entry[language];
+      if (localized) return localized;
+      // Fallback 1: English
+      if (entry.en) return entry.en;
+      // Fallback 2: Hindi
+      if (entry.hi) return entry.hi;
+      return key as string;
+    },
+    [language]
+  );
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        currentLanguage: language,
+        setLanguage,
+        availableLanguages: LANGUAGES,
+        t,
+        isSavingLanguage,
+        saveError,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );

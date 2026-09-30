@@ -62,9 +62,10 @@ def analyze_image(data: bytes, db=None, source: str = "web", language: str = "en
         return _finish(result, t0, t_pre, t_inf)
 
     prediction = prediction_block(class_name, confidence)
-    guidance = get_guidance(class_name)        # general advice - separate from the ML output
+    guidance = get_guidance(class_name)
+    advisory = guidance
     result = {**base, "status": "ok", "is_confident": True, "confidence": prediction["confidence"],
-              "prediction": prediction, "guidance": guidance, "message": None,
+              "prediction": prediction, "guidance": guidance, "advisory": advisory, "message": None,
               "source": "ml_model", "explanation_source": "guidance"}
     extra = ai_explanation_service.generate_extra_explanation(
         prediction["crop"], prediction["disease"], language,

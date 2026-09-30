@@ -4,6 +4,6 @@ PDF reports use Google Noto Sans fonts with HarfBuzz shaping. Font files are dow
 
 Source: https://github.com/google/fonts/tree/main/ofl
 
-Families used: Noto Sans, Noto Sans Devanagari, Noto Sans Kannada, Noto Sans Telugu, Noto Sans Tamil, and Noto Sans Malayalam.
+Families used: Noto Sans, Noto Sans Devanagari, Noto Sans Kannada, Noto Sans Telugu, Noto Sans Tamil, Noto Sans Malayalam, and Noto Sans Bengali.
 
 License: SIL Open Font License 1.1 (OFL). See `OFL.txt`.

@@ -1,7 +1,7 @@
 """
 sarvam_service.py
 
-Optional integration with Sarvam AI for Hindi/Kannada text-to-speech.
+Optional integration with Sarvam AI for Indian-language text-to-speech.
 Disabled unless SARVAM_API_KEY is set in the backend environment.
 The key is NEVER sent to or used by the frontend - all requests are
 made from this backend module only.

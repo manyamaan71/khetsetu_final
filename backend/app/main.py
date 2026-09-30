@@ -9,7 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api import admin, crops, history, market, predict, report, whatsapp
+from .api import admin, crops, history, market, predict, report, speech, whatsapp
 from .config import settings
 from .database import init_db
 from .model import classifier
@@ -58,6 +58,7 @@ async def health():
 
 app.include_router(predict.router, prefix="/api")
 app.include_router(report.router, prefix="/api")
+app.include_router(speech.router, prefix="/api")
 app.include_router(crops.router, prefix="/api")
 app.include_router(market.router, prefix="/api")
 app.include_router(history.router, prefix="/api")

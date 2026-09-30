@@ -1,5 +1,31 @@
-export type Language = 'en' | 'hi';
-export interface Bi<T = string> { en: T; hi: T }
+export type Language = 'en' | 'hi' | 'kn' | 'ta' | 'te' | 'mr' | 'bn';
+export type PreferredLanguage = Language | (string & {});
+
+export interface LanguageOption {
+  code: Language;
+  label: string;
+  nativeLabel: string;
+  locale: string;
+}
+
+export interface Bi<T = string> { en: T; hi: T; [key: string]: T }
+
+export interface FarmerProfile {
+  id?: string;
+  user_id: string;
+  full_name: string;
+  phone?: string | null;
+  preferred_language: PreferredLanguage;
+  state: string | null;
+  district: string | null;
+  taluk: string | null;
+  village: string | null;
+  crops: string[] | null;
+  farm_size: string | number | null;
+  onboarding_completed?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 /** The ML model's answer. Only present when confidence >= the backend threshold. */
 export interface Prediction {
@@ -12,24 +38,36 @@ export interface Prediction {
   disease_hi: string;
 }
 
-/** General agricultural advice from data/guidance.json. NOT produced by the model. */
-export interface Guidance {
+/** Disease-specific advisory returned by the backend. This is the authoritative object for the result page. */
+export interface Advisory {
   class_name: string;
   crop: string;
+  disease: string;
   is_healthy: boolean;
   urgency: 'none' | 'act_soon' | 'act_fast';
-  condition: Bi;
-  what_is_it: Bi;
+  what_we_found: Bi;
+  why_it_happened: Bi<string[]>;
   symptoms: Bi<string[]>;
-  possible_cause: Bi;
+  risk_factors: Bi<string[]>;
+  immediate_actions: Bi<string[]>;
+  management: Bi<string[]>;
   prevention: Bi<string[]>;
-  basic_care: Bi<string[]>;
-  watering_care: Bi<string[]>;
-  nutrient_guidance: Bi<string[]>;
-  consult_expert_when: Bi<string[]>;
   avoid: Bi<string[]>;
+  when_to_seek_help: Bi<string[]>;
+  severity: Bi;
+  spread_risk: Bi;
   source_note: Bi;
+  condition?: Bi;
+  what_is_it?: Bi;
+  possible_cause?: Bi;
+  basic_care?: Bi<string[]>;
+  watering_care?: Bi<string[]>;
+  nutrient_guidance?: Bi<string[]>;
+  consult_expert_when?: Bi<string[]>;
 }
+
+/** Legacy guidance object kept for compatibility with older screens and tests. */
+export type Guidance = Advisory;
 
 interface ScanBase {
   client_scan_id?: string;
@@ -45,6 +83,7 @@ export interface ScanOk extends ScanBase {
   confidence: number;
   prediction: Prediction;
   guidance: Guidance;
+  advisory?: Guidance;
   message: null;
   extra_explanation?: { text: string; language: Language; ai_generated: boolean };
 }

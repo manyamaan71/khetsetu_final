@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Camera, LineChart, History, BookOpen, Sprout, ScanLine, ClipboardCheck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from '../components/LanguageSelector';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import ModelStatus from '../components/ModelStatus';
+import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
-  const { t, language, setLanguage } = useLanguage();
+  const { t } = useLanguage();
+  const { profile } = useAuth();
 
   const steps = [
     { icon: Camera, title: t('step1_title'), desc: t('step1_desc') },
@@ -35,27 +38,14 @@ export default function Home() {
             <p className="text-xs text-gray-500">{t('tagline')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-1 bg-white rounded-full p-1 shadow-sm border border-leaf-100">
-          <button
-            onClick={() => setLanguage('en')}
-            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-              language === 'en' ? 'bg-leaf-600 text-white' : 'text-gray-500'
-            }`}
-          >
-            EN
-          </button>
-          <button
-            onClick={() => setLanguage('hi')}
-            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-              language === 'hi' ? 'bg-leaf-600 text-white' : 'text-gray-500'
-            }`}
-          >
-            हि
-          </button>
-        </div>
+        <LanguageSelector variant="compact" />
       </div>
 
       <div className="flex justify-center"><ModelStatus /></div>
+
+      {profile?.full_name ? (
+        <p className="text-sm font-semibold text-gray-700">{t('welcome')}, {profile.full_name}</p>
+      ) : null}
 
       {/* Hero */}
       <div className="bg-gradient-to-br from-leaf-600 to-leaf-800 rounded-3xl p-6 text-white relative overflow-hidden">

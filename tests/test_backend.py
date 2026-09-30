@@ -122,6 +122,37 @@ def test_healthy_crop_result(client, fake_model, leaf_bytes):
     assert b["guidance"]["is_healthy"] is True and b["guidance"]["urgency"] == "none"
 
 
+def test_disease_specific_advisory_changes_by_class(client, fake_model, leaf_bytes):
+    fake_model("Tomato___Early_blight", 0.94)
+    early = post_image(client, leaf_bytes).json()
+    assert early["status"] == "ok"
+    assert early["advisory"]["crop"] == "Tomato"
+    assert "early blight" in early["advisory"]["what_we_found"]["en"].lower()
+    assert "alternaria" in " ".join(early["advisory"]["why_it_happened"]["en"]).lower()
+
+    fake_model("Tomato___Late_blight", 0.96)
+    late = post_image(client, leaf_bytes).json()
+    assert late["status"] == "ok"
+    assert late["advisory"]["disease"] == "Late Blight"
+    assert late["advisory"]["what_we_found"]["en"] != early["advisory"]["what_we_found"]["en"]
+    assert "late blight" in late["advisory"]["what_we_found"]["en"].lower()
+    assert late["advisory"]["management"]["en"] != early["advisory"]["management"]["en"]
+
+    fake_model("Tomato___healthy", 0.97)
+    healthy = post_image(client, leaf_bytes).json()
+    assert healthy["status"] == "ok"
+    assert healthy["advisory"]["is_healthy"] is True
+    assert "healthy" in healthy["advisory"]["what_we_found"]["en"].lower()
+
+
+def test_disease_info_has_required_fields_for_all_supported_classes():
+    from app.disease_info import list_supported_classes, validate_supporting_data
+    classes = list_supported_classes()
+    assert classes
+    missing = validate_supporting_data()
+    assert not missing, missing
+
+
 def test_non_leaf_image_is_rejected(client, fake_model):
     fake_model("Tomato___Late_blight", 0.99)                          # even a "confident" model must not be asked
     b = post_image(client, make_image_bytes(color=(128, 128, 128))).json()

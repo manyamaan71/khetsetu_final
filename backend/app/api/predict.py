@@ -33,7 +33,7 @@ async def predict_endpoint(image: UploadFile = File(...), language: str = Form("
         raise _err(413, "image_too_large", "Photo is too big (maximum 5 MB). Please use a smaller photo.",
                    "फोटो बहुत बड़ी है (अधिकतम 5 MB)। कृपया छोटी फोटो लें।")
     try:
-        return analyze_image(data, db=db, source="web", language="hi" if language == "hi" else "en")
+        return analyze_image(data, db=db, source="web", language=language)
     except InvalidImageError:
         raise _err(422, "invalid_image", "We could not read this photo. Please use a JPG, PNG or WEBP photo.",
                    "यह फोटो पढ़ी नहीं जा सकी। कृपया JPG, PNG या WEBP फोटो लें।")

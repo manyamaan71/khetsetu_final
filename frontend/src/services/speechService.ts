@@ -1,14 +1,17 @@
 /**
  * speechService.ts - text-to-speech.
  *
- * Default provider: the browser's Web Speech API (free, works offline if the phone has a
- * Hindi voice installed). Hindi uses lang "hi-IN".
- *
- * Later upgrade (e.g. Sarvam): implement `TtsProvider` by calling YOUR backend
- * (POST /api/speech -> audio) and register it with `setTtsProvider()`. The API key must stay
- * on the server (backend/app/services/sarvam_service.py) - never in this frontend.
+ * Uses the optional Sarvam backend first and keeps Web Speech as the offline/unavailable fallback.
  */
-export type SpeechLang = 'hi-IN' | 'en-IN';
+import { LANGUAGES, DEFAULT_LANGUAGE_CODE } from '../config/languages';
+import { requestSarvamSpeech } from './api';
+
+export type SpeechLang = string;
+
+export function getSpeechLang(lang: string): SpeechLang {
+  return LANGUAGES.find((item) => item.code === lang)?.locale
+    ?? LANGUAGES.find((item) => item.code === DEFAULT_LANGUAGE_CODE)!.locale;
+}
 
 export interface TtsProvider {
   isSupported(): boolean;
@@ -48,7 +51,7 @@ const browserProvider: TtsProvider = {
       window.speechSynthesis.cancel();
       cancelled = false;
       const queue = chunk(text);
-      const voice = voices().find((v) => v.lang === lang) || voices().find((v) => v.lang.startsWith(lang.slice(0, 2)));
+      const voice = voices().find((v) => v.lang === lang) || voices().find((v) => v.lang.toLowerCase().startsWith(lang.slice(0, 2).toLowerCase()));
       const next = () => {
         const part = queue.shift();
         if (!part || cancelled) return resolve();
@@ -65,13 +68,89 @@ const browserProvider: TtsProvider = {
 };
 
 let provider: TtsProvider = browserProvider;
+let activeSarvamAudio: HTMLAudioElement | null = null;
+let activeSarvamUrl: string | null = null;
+let cancelSarvamPlayback: (() => void) | null = null;
+let speechGeneration = 0;
+
 export function setTtsProvider(p: TtsProvider) { provider = p; }
 
-export const isSpeechSupported = () => provider.isSupported();
+async function playSarvamResponse(response: Blob, generation: number): Promise<boolean> {
+  let audioUrl: string | null = null;
+  let cancelPlayback: (() => void) | null = null;
+  try {
+    const payload: unknown = JSON.parse(await response.text());
+    if (!payload || typeof payload !== 'object' || !('audios' in payload)) return false;
+    const audios = (payload as { audios?: unknown }).audios;
+    const encoded = Array.isArray(audios) ? audios[0] : undefined;
+    if (typeof encoded !== 'string' || !encoded) return false;
+
+    const base64 = encoded.replace(/^data:audio\/[^;]+;base64,/, '');
+    const bytes = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
+    audioUrl = URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+    const audio = new Audio(audioUrl);
+    let resolvePlayback: ((played: boolean) => void) | undefined;
+    const playback = new Promise<boolean>((resolve) => { resolvePlayback = resolve; });
+    cancelPlayback = () => resolvePlayback?.(false);
+    activeSarvamAudio = audio;
+    activeSarvamUrl = audioUrl;
+    cancelSarvamPlayback = cancelPlayback;
+    audio.onended = () => resolvePlayback?.(true);
+    audio.onerror = () => resolvePlayback?.(false);
+
+    await audio.play();
+    if (generation !== speechGeneration || cancelled) cancelPlayback();
+    return await playback;
+  } catch {
+    return false;
+  } finally {
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    if (activeSarvamUrl === audioUrl) {
+      activeSarvamAudio = null;
+      activeSarvamUrl = null;
+      if (cancelSarvamPlayback === cancelPlayback) cancelSarvamPlayback = null;
+    }
+  }
+}
+
+export const isSpeechSupported = () => provider.isSupported()
+  || (typeof navigator !== 'undefined' && navigator.onLine);
 export const hasVoiceFor = (lang: SpeechLang) => provider.hasVoiceFor(lang);
-export const speak = (text: string, lang: SpeechLang = 'hi-IN') => provider.speak(text, lang);
-export const stopSpeaking = () => provider.stop();
-export const isSpeaking = () => provider.isSpeaking();
+
+export async function speak(text: string, lang: SpeechLang = 'en-IN'): Promise<boolean> {
+  stopSpeaking();
+  const generation = ++speechGeneration;
+  cancelled = false;
+
+  if (provider !== browserProvider) {
+    await provider.speak(text, lang);
+    return true;
+  }
+
+  if (typeof navigator === 'undefined' || navigator.onLine) {
+    const sarvamResponse = await requestSarvamSpeech(text, lang);
+    if (sarvamResponse && generation === speechGeneration && !cancelled
+      && await playSarvamResponse(sarvamResponse, generation)) return true;
+  }
+
+  if (generation !== speechGeneration || cancelled || !browserProvider.isSupported()) return false;
+  if (!browserProvider.hasVoiceFor(lang)) return false;
+  await browserProvider.speak(text, lang);
+  return true;
+}
+
+export function stopSpeaking() {
+  speechGeneration += 1;
+  cancelled = true;
+  cancelSarvamPlayback?.();
+  activeSarvamAudio?.pause();
+  activeSarvamAudio = null;
+  if (activeSarvamUrl) URL.revokeObjectURL(activeSarvamUrl);
+  activeSarvamUrl = null;
+  provider.stop();
+}
+
+export const isSpeaking = () => Boolean(activeSarvamAudio && !activeSarvamAudio.paused) || provider.isSpeaking();
 
 // Voices load asynchronously in Chrome/Android; touching the list early makes them available by the time the user taps.
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {

@@ -50,10 +50,10 @@ export async function compressImage(file: File, maxDimension = 1024, quality = 0
   });
 }
 
-async function request(path: string, init?: RequestInit): Promise<Response> {
+async function request(path: string, init?: RequestInit, timeoutMs = REQUEST_TIMEOUT_MS): Promise<Response> {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) throw new ApiError('offline', 'Offline');
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     return await fetch(`${API_BASE}${path}`, { ...init, signal: ctrl.signal });
   } catch (e) {
@@ -74,7 +74,7 @@ async function errorFrom(res: Response): Promise<ApiError> {
   return new ApiError('server', 'Server error');
 }
 
-export async function predictCrop(file: File, language: 'en' | 'hi'): Promise<ScanApiResponse> {
+export async function predictCrop(file: File, language: Language): Promise<ScanApiResponse> {
   validateImageType(file);
   let payload: Blob = file;
   try { payload = await compressImage(file); } catch { /* fall back to the original file */ }
@@ -88,10 +88,11 @@ export async function predictCrop(file: File, language: 'en' | 'hi'): Promise<Sc
   return res.json();
 }
 
-export async function downloadScanReport(image: Blob, language: Language): Promise<{ blob: Blob; filename: string }> {
+export async function downloadScanReport(image: Blob, language: Language, farmerName?: string): Promise<{ blob: Blob; filename: string }> {
   const form = new FormData();
   form.append('image', image, 'scan.jpg');
   form.append('language', language);
+  if (farmerName?.trim()) form.append('farmer_name', farmerName.trim());
   const res = await request('/report/pdf', { method: 'POST', body: form });
   if (!res.ok) throw await errorFrom(res);
   const disposition = res.headers.get('content-disposition') || '';
@@ -113,6 +114,19 @@ export async function fetchHealth(): Promise<HealthInfo | null> {
   try {
     const res = await request('/health');
     return res.ok ? res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function requestSarvamSpeech(text: string, locale: string): Promise<Blob | null> {
+  if (!text.trim()) return null;
+  const form = new FormData();
+  form.append('text', text);
+  form.append('language', locale);
+  try {
+    const res = await request('/speech/tts', { method: 'POST', body: form }, 4000);
+    return res.ok ? await res.blob() : null;
   } catch {
     return null;
   }

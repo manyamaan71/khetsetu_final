@@ -8,7 +8,7 @@ import { getHistory, clearHistory, saveLastResult } from '../services/storageSer
 import { HistoryItem } from '../types';
 
 export default function History() {
-  const { t, language } = useLanguage();
+  const { t, language, availableLanguages } = useLanguage();
   const navigate = useNavigate();
   const [items, setItems] = useState<HistoryItem[]>([]);
 
@@ -23,11 +23,14 @@ export default function History() {
   };
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', {
+    new Date(iso).toLocaleDateString(
+      availableLanguages.find((item) => item.code === language)?.locale ?? availableLanguages[0].locale,
+      {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
-    });
+      },
+    );
 
   return (
     <div className="space-y-4 pt-2">
