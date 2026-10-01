@@ -1,21 +1,44 @@
-"""Optional Sarvam speech proxy. The frontend falls back to Web Speech when unavailable."""
-from fastapi import APIRouter, Form, HTTPException
+"""Sarvam speech proxy."""
+from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 
 from ..services.speech_service import synthesize_speech
 
 router = APIRouter()
-SUPPORTED_SARVAM_LANGUAGES = {"en-IN", "hi-IN", "kn-IN", "ta-IN", "te-IN", "mr-IN", "bn-IN"}
+LANGUAGE_CODES = {
+    "en": "en-IN", "en-IN": "en-IN",
+    "hi": "hi-IN", "hi-IN": "hi-IN",
+    "kn": "kn-IN", "kn-IN": "kn-IN",
+    "ta": "ta-IN", "ta-IN": "ta-IN",
+    "te": "te-IN", "te-IN": "te-IN",
+    "ml": "ml-IN", "ml-IN": "ml-IN",
+    "mr": "mr-IN", "mr-IN": "mr-IN",
+    "bn": "bn-IN", "bn-IN": "bn-IN",
+}
 
 
-@router.post("/speech/tts")
-def text_to_speech(text: str = Form(...), language: str = Form("en-IN")):
-    text = text.strip()
+class TTSRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=2500)
+    language: str = "en"
+
+
+@router.post("/tts")
+@router.post("/speech/tts", include_in_schema=False)
+async def text_to_speech(payload: TTSRequest):
+    text = payload.text.strip()
     if not text:
         raise HTTPException(status_code=422, detail={"code": "empty_text"})
 
-    target_language = language if language in SUPPORTED_SARVAM_LANGUAGES else "en-IN"
-    audio_response = synthesize_speech(text, target_language)
+    target_language = LANGUAGE_CODES.get(payload.language)
+    if not target_language:
+        raise HTTPException(status_code=422, detail={"code": "unsupported_language"})
+
+    audio_bytes = await synthesize_speech(text, target_language)
+    if audio_bytes is None:
+        raise HTTPException(status_code=502, detail={"code": "speech_unavailable"})
+
+    return Response(content=audio_bytes, media_type="audio/wav")
     if audio_response is None:
         raise HTTPException(status_code=503, detail={"code": "sarvam_unavailable"})
 

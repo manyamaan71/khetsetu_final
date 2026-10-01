@@ -119,14 +119,16 @@ export async function fetchHealth(): Promise<HealthInfo | null> {
   }
 }
 
-export async function requestSarvamSpeech(text: string, locale: string): Promise<Blob | null> {
+export async function requestTtsAudio(text: string, language: string): Promise<Blob | null> {
   if (!text.trim()) return null;
-  const form = new FormData();
-  form.append('text', text);
-  form.append('language', locale);
   try {
-    const res = await request('/speech/tts', { method: 'POST', body: form }, 4000);
-    return res.ok ? await res.blob() : null;
+    const res = await request('/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language }),
+    }, 65_000);
+    if (!res.ok || !res.headers.get('content-type')?.startsWith('audio/wav')) return null;
+    return await res.blob();
   } catch {
     return null;
   }

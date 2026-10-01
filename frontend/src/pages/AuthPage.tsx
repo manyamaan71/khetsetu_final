@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function AuthPage({ mode = 'login' }: { mode?: 'login' | 'signup' }) {
   const { isAuthenticated, loading, signInWithEmail, signUpWithEmail, profile } = useAuth();
@@ -29,6 +30,8 @@ export default function AuthPage({ mode = 'login' }: { mode?: 'login' | 'signup'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isSupabaseConfigured) return;
+
     const normalizedEmail = email.trim();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
@@ -145,10 +148,16 @@ export default function AuthPage({ mode = 'login' }: { mode?: 'login' | 'signup'
             </div>
           ) : null}
 
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting || !isSupabaseConfigured}>
             {submitting ? t('please_wait') : mode === 'signup' ? t('create_account') : t('login_button')}
           </Button>
         </form>
+
+        {!isSupabaseConfigured && (
+          <div role="alert" className="mt-4 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            {t('auth_setup_required')}
+          </div>
+        )}
 
         {status && (
           <div className="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-800">

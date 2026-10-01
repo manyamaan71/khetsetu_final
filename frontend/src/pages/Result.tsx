@@ -160,9 +160,14 @@ export default function Result() {
     const targetSpeechLang = getSpeechLang(language);
     setVoiceNote(null);
     setSpeaking(true);
-    const voicePlayed = await speak(speechText(r, language, t), targetSpeechLang);
-    if (!voicePlayed) setVoiceNote(t('tts_no_voice'));
-    setSpeaking(false);
+    try {
+      const voicePlayed = await speak(speechText(r, language, t), targetSpeechLang);
+      if (!voicePlayed) setVoiceNote(t('tts_no_voice'));
+    } catch {
+      setVoiceNote(t('tts_no_voice'));
+    } finally {
+      setSpeaking(false);
+    }
   };
 
   return (

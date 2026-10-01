@@ -1,6 +1,7 @@
 # ---- secrets ----
 .env
 backend/.env
+frontend/.env.local
 *.pem
 
 # ---- frontend ----

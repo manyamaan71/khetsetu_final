@@ -4,7 +4,7 @@
  * Uses the optional Sarvam backend first and keeps Web Speech as the offline/unavailable fallback.
  */
 import { LANGUAGES, DEFAULT_LANGUAGE_CODE } from '../config/languages';
-import { requestSarvamSpeech } from './api';
+import { requestTtsAudio } from './api';
 
 export type SpeechLang = string;
 
@@ -75,19 +75,11 @@ let speechGeneration = 0;
 
 export function setTtsProvider(p: TtsProvider) { provider = p; }
 
-async function playSarvamResponse(response: Blob, generation: number): Promise<boolean> {
+async function playAudioBlob(response: Blob, generation: number): Promise<boolean> {
   let audioUrl: string | null = null;
   let cancelPlayback: (() => void) | null = null;
   try {
-    const payload: unknown = JSON.parse(await response.text());
-    if (!payload || typeof payload !== 'object' || !('audios' in payload)) return false;
-    const audios = (payload as { audios?: unknown }).audios;
-    const encoded = Array.isArray(audios) ? audios[0] : undefined;
-    if (typeof encoded !== 'string' || !encoded) return false;
-
-    const base64 = encoded.replace(/^data:audio\/[^;]+;base64,/, '');
-    const bytes = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
-    audioUrl = URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+    audioUrl = URL.createObjectURL(response);
     const audio = new Audio(audioUrl);
     let resolvePlayback: ((played: boolean) => void) | undefined;
     const playback = new Promise<boolean>((resolve) => { resolvePlayback = resolve; });
@@ -128,11 +120,12 @@ export async function speak(text: string, lang: SpeechLang = 'en-IN'): Promise<b
   }
 
   if (typeof navigator === 'undefined' || navigator.onLine) {
-    const sarvamResponse = await requestSarvamSpeech(text, lang);
-    if (sarvamResponse && generation === speechGeneration && !cancelled
-      && await playSarvamResponse(sarvamResponse, generation)) return true;
+    const audioResponse = await requestTtsAudio(text, lang);
+    if (audioResponse && generation === speechGeneration && !cancelled
+      && await playAudioBlob(audioResponse, generation)) return true;
   }
 
+  if (lang !== 'en-IN' && lang !== 'hi-IN') return false;
   if (generation !== speechGeneration || cancelled || !browserProvider.isSupported()) return false;
   if (!browserProvider.hasVoiceFor(lang)) return false;
   await browserProvider.speak(text, lang);
