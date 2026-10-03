@@ -13,7 +13,7 @@ import { getCurrentScanImage, getLastResult } from '../services/storageService';
 import { downloadScanReport } from '../services/api';
 import LanguageSelector from '../components/LanguageSelector';
 import { speak, stopSpeaking, isSpeechSupported, getSpeechLang } from '../services/speechService';
-import { Language, ScanApiResponse, ScanOk } from '../types';
+import { Language, ScanApiResponse, ScanOk, localName } from '../types';
 
 function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
@@ -46,8 +46,8 @@ function localizedList(value: Record<string, string | string[]> | undefined, lan
 function speechText(r: ScanOk, lang: Language, t: (k: any) => string): string {
   const g = r.advisory ?? r.guidance;
   const p = r.prediction;
-  const crop = lang === 'hi' ? p.crop_hi : p.crop;
-  const cond = lang === 'hi' ? p.disease_hi : p.disease;
+  const crop = localName(p, 'crop', lang);
+  const cond = localName(p, 'disease', lang);
   const whatFound = localizedValue(g.what_we_found, lang) ?? localizedValue(g.what_is_it, lang) ?? '';
   const why = localizedList(g.why_it_happened, lang).join(' ');
   const actionPlan = (localizedList(g.immediate_actions, lang).length
@@ -150,18 +150,28 @@ export default function Result() {
   const r = result;
   const p = r.prediction;
   const g = (r.advisory ?? r.guidance) as any;
-  const crop = language === 'hi' ? p.crop_hi : p.crop;
-  const cond = language === 'hi' ? p.disease_hi : p.disease;
+  const adviceFields = [
+    'what_we_found', 'what_is_it', 'why_it_happened', 'possible_cause', 'symptoms',
+    'immediate_actions', 'basic_care', 'management', 'prevention', 'avoid',
+    'when_to_seek_help', 'consult_expert_when', 'severity', 'spread_risk', 'source_note',
+  ];
+  const adviceUsesEnglishFallback = language !== 'en' && adviceFields.some((field) => {
+    const value = g[field] as Record<string, unknown> | undefined;
+    return value?.en !== undefined && value[language] === undefined;
+  });
+  const crop = localName(p, 'crop', language);
+  const cond = localName(p, 'disease', language);
   const marketCrop = p.crop === 'Corn' ? 'Maize' : p.crop;
 
   const toggleSpeech = async () => {
     if (speaking) { stopSpeaking(); setSpeaking(false); return; }
     if (!isSpeechSupported()) { setVoiceNote(t('tts_unsupported')); return; }
-    const targetSpeechLang = getSpeechLang(language);
+    const speechLanguage = adviceUsesEnglishFallback ? 'en' : language;
+    const targetSpeechLang = adviceUsesEnglishFallback ? 'en-IN' : getSpeechLang(language);
     setVoiceNote(null);
     setSpeaking(true);
     try {
-      const voicePlayed = await speak(speechText(r, language, t), targetSpeechLang);
+      const voicePlayed = await speak(speechText(r, speechLanguage, t), targetSpeechLang);
       if (!voicePlayed) setVoiceNote(t('tts_no_voice'));
     } catch {
       setVoiceNote(t('tts_no_voice'));
@@ -177,6 +187,11 @@ export default function Result() {
         {langToggle}
       </div>
 
+      {adviceUsesEnglishFallback && (
+        <div role="status" className="rounded-xl bg-amber-50 px-3 py-2 text-center text-xs text-amber-800">
+          {t('advice_english_notice')}
+        </div>
+      )}
       {r.demo_mode && (
         <div className="bg-amber-100 text-amber-900 text-sm font-bold text-center py-2 px-3 rounded-xl flex items-center justify-center gap-2">
           <AlertTriangle size={16} /> {t('demo_banner')}

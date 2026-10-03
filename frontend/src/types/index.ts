@@ -36,6 +36,8 @@ export interface Prediction {
   is_healthy: boolean;
   crop_hi: string;
   disease_hi: string;
+  crop_i18n?: Partial<Record<Language, string>>;
+  disease_i18n?: Partial<Record<Language, string>>;
 }
 
 /** Disease-specific advisory returned by the backend. This is the authoritative object for the result page. */
@@ -106,6 +108,8 @@ export interface HistoryItem {
   disease: string;
   hindi_crop: string;
   hindi_disease: string;
+  crop_i18n?: Partial<Record<Language, string>>;
+  disease_i18n?: Partial<Record<Language, string>>;
   confidence: number;
   is_healthy: boolean;
   is_confident: boolean;
@@ -113,6 +117,13 @@ export interface HistoryItem {
   result?: ScanOk;          // full result so "View" works offline
 }
 
+export function localName(item: Prediction | HistoryItem, field: 'crop' | 'disease', language: Language): string {
+  const localized = (field === 'crop' ? item.crop_i18n?.[language] : item.disease_i18n?.[language]) || undefined;
+  const hindi = field === 'crop'
+    ? ('crop_hi' in item ? item.crop_hi : item.hindi_crop)
+    : ('disease_hi' in item ? item.disease_hi : item.hindi_disease);
+  return localized || (language === 'hi' ? hindi : undefined) || item[field];
+}
 export interface MarketPriceRow {
   market: string; crop: string; state: string; district: string;
   min_price: number; max_price: number; modal_price: number; date: string; unit: string;
