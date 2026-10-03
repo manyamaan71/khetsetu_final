@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -31,6 +32,25 @@ REQUIRED_FIELDS = (
     "severity",
     "spread_risk",
 )
+
+_ADVICE_FIELDS = (
+    "what_we_found",
+    "what_is_it",
+    "why_it_happened",
+    "possible_cause",
+    "symptoms",
+    "immediate_actions",
+    "basic_care",
+    "management",
+    "prevention",
+    "avoid",
+    "when_to_seek_help",
+    "consult_expert_when",
+    "severity",
+    "spread_risk",
+    "source_note",
+)
+_ADVICE_LANGUAGES = ("kn", "ta", "te", "mr", "bn")
 
 
 def _read(path: Path):
@@ -697,6 +717,71 @@ def prediction_block(class_name: str, confidence: float) -> dict:
 
 
 @lru_cache(maxsize=1)
+def _advice_translations() -> dict[str, dict[str, dict]]:
+    directory = Path(settings.DATA_DIR) / "advice_i18n"
+    allow_drafts = os.environ.get("ALLOW_DRAFT_TRANSLATIONS", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    translations: dict[str, dict[str, dict]] = {}
+
+    for language in _ADVICE_LANGUAGES:
+        sources = (
+            (directory / f"{language}.json", False),
+            (directory / "drafts" / f"{language}.json", True),
+        )
+        for path, is_draft_file in sources:
+            if not path.is_file():
+                continue
+
+            document = _read(path)
+            status = document.get("status")
+            if status not in {"reviewed", "draft"}:
+                raise ValueError(f"{path} must have status 'reviewed' or 'draft'")
+            if is_draft_file and status != "draft":
+                continue
+            if status == "draft" and not allow_drafts:
+                continue
+
+            classes = document.get("classes")
+            if not isinstance(classes, dict):
+                raise ValueError(f"{path} must contain a classes object")
+
+            for class_name, class_data in classes.items():
+                fields = class_data.get("fields") if isinstance(class_data, dict) else None
+                if not isinstance(fields, dict):
+                    raise ValueError(f"{path}: {class_name} must contain a fields object")
+                if set(fields) != set(_ADVICE_FIELDS):
+                    raise ValueError(f"{path}: {class_name} has an incomplete advice fields set")
+
+                key = _norm_class_name(class_name)
+                translations.setdefault(key, {})[language] = fields
+
+    return translations
+
+
+def _apply_advice_translations(profile: dict) -> dict:
+    class_name = profile.get("class_name", "")
+    by_language = _advice_translations().get(_norm_class_name(class_name), {})
+    for language, fields in by_language.items():
+        for field in _ADVICE_FIELDS:
+            if field not in fields or field not in profile:
+                continue
+
+            english = profile[field].get("en") if isinstance(profile[field], dict) else None
+            translated = fields[field]
+            if not isinstance(english, (str, list)) or not isinstance(translated, type(english)):
+                raise ValueError(f"{class_name}: invalid {language} translation type for {field}")
+            if isinstance(english, list) and len(translated) != len(english):
+                raise ValueError(f"{class_name}: {language} translation length mismatch for {field}")
+            profile[field][language] = copy.deepcopy(translated)
+
+    return profile
+
+
+@lru_cache(maxsize=1)
 def _guidance() -> dict:
     out = {}
     for class_name in list_supported_classes():
@@ -712,10 +797,12 @@ def _guidance() -> dict:
 def get_guidance(class_name: str) -> dict:
     key = _alias_key(class_name)
     if key in DISEASE_INFO:
-        return _profile_for_key(key)
-    if class_name in _guidance():
-        return _guidance()[class_name]
-    return _profile_for_key("Tomato_early_blight")
+        profile = _profile_for_key(key)
+    elif class_name in _guidance():
+        profile = copy.deepcopy(_guidance()[class_name])
+    else:
+        profile = _profile_for_key("Tomato_early_blight")
+    return _apply_advice_translations(profile)
 
 
 def get_disease_profile(class_name: str) -> dict:
