@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -156,13 +157,60 @@ def _make_compat_profile(profile: dict, class_name: str) -> dict:
     return output
 
 
+_ADVICE_FIELDS = (
+    "what_we_found", "what_is_it", "why_it_happened", "possible_cause",
+    "symptoms", "immediate_actions", "basic_care", "management", "prevention",
+    "avoid", "when_to_seek_help", "consult_expert_when", "severity", "spread_risk",
+    "source_note",
+)
+_ADVICE_LANGUAGES = ("kn", "ta", "te", "mr", "bn")
+
+
+def _canonical_class_name(name: str) -> str:
+    key = _alias_key(name)
+    return next(
+        (item["class_name"] for item in _classes() if _alias_key(item["class_name"]) == key),
+        name,
+    )
+
+
+@lru_cache(maxsize=5)
+def _advice_translations(lang: str) -> dict:
+    root = Path(__file__).resolve().parents[2] / "data" / "advice_i18n"
+    translations: dict = {}
+    reviewed_path = root / f"{lang}.json"
+    if reviewed_path.is_file():
+        reviewed = _read(reviewed_path)
+        if reviewed.get("status") == "reviewed":
+            translations = reviewed.get("classes", {})
+    if os.getenv("ALLOW_DRAFT_TRANSLATIONS", "").lower() == "true":
+        draft_path = root / "drafts" / f"{lang}.json"
+        if draft_path.is_file():
+            draft = _read(draft_path)
+            if draft.get("status") in {"draft", "reviewed"}:
+                translations = {**translations, **draft.get("classes", {})}
+    return translations
+
+
+def _overlay_advice_translations(profile: dict, class_name: str) -> dict:
+    canonical = _canonical_class_name(class_name)
+    for lang in _ADVICE_LANGUAGES:
+        translated = _advice_translations(lang).get(canonical, {})
+        fields = translated.get("fields", {})
+        for field in _ADVICE_FIELDS:
+            value = fields.get(field)
+            if value is not None and isinstance(profile.get(field), dict):
+                profile[field][lang] = value
+    return profile
+
+
 def _profile_for_key(name: str) -> dict:
     key = _alias_key(name)
     if key not in DISEASE_INFO:
         raise KeyError(f"No disease advisory exists for {name!r}")
     profile = copy.deepcopy(DISEASE_INFO[key])
     profile["class_name"] = name
-    return _make_compat_profile(profile, name)
+    return _overlay_advice_translations(_make_compat_profile(profile, name), name)
 
 
 DISEASE_INFO: dict[str, dict] = {
@@ -1256,7 +1304,7 @@ def prediction_block(class_name: str, confidence: float) -> dict:
     class_key = _alias_key(class_name)
     # Prefer the configured class metadata when it exists; otherwise fall back to the disease database.
     c = _by_name().get(class_name, _by_name().get(class_key, {"crop": DISEASE_INFO.get(class_key, {}).get("crop", "Unknown"), "disease": DISEASE_INFO.get(class_key, {}).get("disease", "Unknown"), "is_healthy": False, "crop_hi": "अज्ञात", "disease_hi": "अज्ञात"}))
-    return {
+    prediction = {
         "class_name": class_name,
         "crop": c["crop"],
         "disease": c["disease"],
@@ -1265,6 +1313,22 @@ def prediction_block(class_name: str, confidence: float) -> dict:
         "crop_hi": c.get("crop_hi", c["crop"]),
         "disease_hi": c.get("disease_hi", c["disease"]),
     }
+    canonical = _canonical_class_name(class_name)
+    crop_i18n = {"en": c["crop"], "hi": c.get("crop_hi", c["crop"])}
+    disease_i18n = {"en": c["disease"], "hi": c.get("disease_hi", c["disease"])}
+    for language in _ADVICE_LANGUAGES:
+        translated = _advice_translations(language).get(canonical, {})
+        crop_name = translated.get("crop") or c.get(f"crop_{language}")
+        disease_name = translated.get("disease") or c.get(f"disease_{language}")
+        if crop_name:
+            crop_i18n[language] = crop_name
+            prediction[f"crop_{language}"] = crop_name
+        if disease_name:
+            disease_i18n[language] = disease_name
+            prediction[f"disease_{language}"] = disease_name
+    prediction["crop_i18n"] = crop_i18n
+    prediction["disease_i18n"] = disease_i18n
+    return prediction
 
 
 @lru_cache(maxsize=1)
