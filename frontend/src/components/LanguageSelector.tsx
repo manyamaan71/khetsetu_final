@@ -76,6 +76,7 @@ export default function LanguageSelector({
             ))}
           </select>
         </div>
+        {saveError ? <p role="alert" className="absolute top-full right-0 z-50 mt-1 w-56 rounded-lg bg-white p-2 text-xs text-red-700 shadow">{t(saveError)}</p> : null}
       </div>
     );
   }

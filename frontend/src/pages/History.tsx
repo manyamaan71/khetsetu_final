@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { getHistory, clearHistory, saveLastResult } from '../services/storageService';
-import { HistoryItem, localName } from '../types';
+import { HistoryItem } from '../types';
 
 export default function History() {
   const { t, language, availableLanguages } = useLanguage();
@@ -58,7 +58,7 @@ export default function History() {
               {item.thumbnail ? (
                 <img
                   src={item.thumbnail}
-                  alt={`${localName(item, 'crop', language)} scan thumbnail`}
+                  alt={`${item.crop} scan thumbnail`}
                   className="w-14 h-14 rounded-xl object-cover shrink-0"
                 />
               ) : (
@@ -69,10 +69,10 @@ export default function History() {
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-400">{formatDate(item.date)}</p>
                 <p className="font-semibold text-gray-800 truncate">
-                  {localName(item, 'crop', language)}
+                  {language === 'hi' ? item.hindi_crop : item.crop}
                 </p>
                 <p className={`text-sm truncate ${item.is_healthy ? 'text-leaf-600' : 'text-amber-700'}`}>
-                  {item.is_healthy ? t('healthy_leaf') : localName(item, 'disease', language)}
+                  {item.is_healthy ? t('healthy_leaf') : language === 'hi' ? item.hindi_disease : item.disease}
                 </p>
               </div>
               <div className="text-right shrink-0 space-y-1">

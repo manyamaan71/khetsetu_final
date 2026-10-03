@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Card from '../components/Card';
 import { useLanguage } from '../context/LanguageContext';
-import { fetchAdminStats } from '../services/api';
 
 interface AdminStats {
   total_scans: number;
@@ -12,13 +11,19 @@ interface AdminStats {
   crop_distribution: Record<string, number>;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+
 export default function Admin() {
   const { t } = useLanguage();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetchAdminStats()
+    fetch(`${API_BASE}/admin/stats`)
+      .then((r) => {
+        if (!r.ok) throw new Error('failed');
+        return r.json();
+      })
       .then(setStats)
       .catch(() => setError(true));
   }, []);

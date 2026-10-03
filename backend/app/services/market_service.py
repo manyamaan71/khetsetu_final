@@ -6,13 +6,15 @@ Priority:
               Every successful response is written to data/cache/market_cache.json.
   2. CACHED - if the live call fails, the last successful response for the same query is
               returned and flagged source="cached" with its fetch time.
-  3. DEMO   - when ALLOW_DEMO_MARKET is true and no live result/cache is available.
-              Always flagged is_demo=true / source="demo".
-If ALLOW_DEMO_MARKET is false and live + cache are unavailable, source="unavailable" has no rows.
+  3. DEMO   - ONLY when no MARKET_API_KEY is configured. Always flagged is_demo=true /
+              source="demo"; the UI and WhatsApp replies say "Demo market data".
+If a key IS configured but live + cache both fail we return source="unavailable" with no rows.
+We never show demo numbers as if they were live.
 
 NOTE: the live parser follows the documented data.gov.in record format (state, district,
 market, commodity, arrival_date, min_price, max_price, modal_price; Rs per quintal). It has
-been unit-tested against the documented sample response format.
+been unit-tested against sample records but not against the live service (no API key was
+available while building).
 """
 import hashlib
 import json
@@ -74,54 +76,29 @@ def _cache_write(key: str, payload: dict) -> None:
 
 
 def _num(v) -> Optional[int]:
-    if v is None or not str(v).strip():
-        return None
     try:
-        return int(float(str(v).replace(",", "").strip()))
-    except (TypeError, ValueError, OverflowError):
+        return int(float(v))
+    except (TypeError, ValueError):
         return None
-
-
-def _text(value) -> str:
-    return str(value).strip() if value is not None else ""
-
-
-def _arrival_date_key(value: str) -> tuple[bool, date]:
-    for date_format in ("%d/%m/%Y", "%Y-%m-%d"):
-        try:
-            return True, datetime.strptime(value.strip(), date_format).date()
-        except ValueError:
-            continue
-    return False, date.min
 
 
 def parse_live_records(records: list[dict]) -> list[dict]:
     rows = []
     for r in records:
         modal = _num(r.get("modal_price"))
-        if modal is None or modal <= 0:
+        if modal is None:
             continue
-        market = _text(r.get("market"))
-        arrival_date = _text(r.get("arrival_date"))
-        min_price = _num(r.get("min_price"))
-        max_price = _num(r.get("max_price"))
         rows.append({
-            "market": f"{market} Mandi" if market else "", "crop": _text(r.get("commodity")),
-            "state": _text(r.get("state")), "district": _text(r.get("district")),
-            "min_price": min_price if min_price is not None else modal,
-            "max_price": max_price if max_price is not None else modal,
-            "modal_price": modal, "date": arrival_date, "unit": "quintal",
-            "variety": _text(r.get("variety"))})
-    return sorted(rows, key=lambda row: _arrival_date_key(row["date"]), reverse=True)
+            "market": f"{r.get('market', '')} Mandi".strip(), "crop": r.get("commodity", ""),
+            "state": r.get("state", ""), "district": r.get("district", ""),
+            "min_price": _num(r.get("min_price")) or modal, "max_price": _num(r.get("max_price")) or modal,
+            "modal_price": modal, "date": r.get("arrival_date", ""), "unit": "quintal",
+            "variety": r.get("variety", "")})
+    return rows
 
 
 def _fetch_live(crop, state, district) -> list[dict]:
-    params = {
-        "api-key": settings.MARKET_API_KEY,
-        "format": "json",
-        "limit": "50",
-        "sort[arrival_date]": "desc",
-    }
+    params = {"api-key": settings.MARKET_API_KEY, "format": "json", "limit": "50"}
     if crop:
         params["filters[commodity]"] = crop
     if state:
@@ -156,12 +133,11 @@ def get_market_prices(crop: Optional[str] = None, state: Optional[str] = None,
     key = f"{crop}|{state}|{district}"
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
-    if not settings.MARKET_API_KEY and settings.ALLOW_DEMO_MARKET:
+    if not settings.MARKET_API_KEY:
         return {"rows": _demo_rows(crop, state, district)[:12], "is_demo": True, "source": "demo",
                 "stale": False, "fetched_at": now,
                 "message": {"en": "Demo market data - not live prices.", "hi": "डेमो बाज़ार डेटा - यह असली भाव नहीं हैं।"}}
-    if not settings.MARKET_API_KEY:
-        return _unavailable_payload(now)
+
     hit = _mem.get(key)
     if hit and time.time() - hit[0] < _TTL_SECONDS:
         return hit[1]
@@ -181,22 +157,6 @@ def get_market_prices(crop: Optional[str] = None, state: Optional[str] = None,
             return {**cached, "source": "cached", "stale": True,
                     "message": {"en": f"Live prices are unavailable. Showing the last saved prices from {cached.get('fetched_at', 'earlier')}.",
                                 "hi": "लाइव भाव अभी उपलब्ध नहीं हैं। पिछली बार सहेजे गए भाव दिखाए जा रहे हैं।"}}
-        if settings.ALLOW_DEMO_MARKET:
-            return {"rows": _demo_rows(crop, state, district)[:12], "is_demo": True, "source": "demo",
-                    "stale": False, "fetched_at": now,
-                    "message": {"en": "Demo market data - not live prices.", "hi": "डेमो बाज़ार डेटा - यह असली भाव नहीं हैं।"}}
-        return _unavailable_payload(now)
-
-
-def _unavailable_payload(fetched_at: str) -> dict:
-    return {
-        "rows": [],
-        "is_demo": False,
-        "source": "unavailable",
-        "stale": False,
-        "fetched_at": fetched_at,
-        "message": {
-            "en": "Market prices are not available right now. Please try again later.",
-            "hi": "बाज़ार भाव अभी उपलब्ध नहीं हैं। कृपया बाद में कोशिश करें।",
-        },
-    }
+        return {"rows": [], "is_demo": False, "source": "unavailable", "stale": False, "fetched_at": now,
+                "message": {"en": "Market prices are not available right now. Please try again later.",
+                            "hi": "बाज़ार भाव अभी उपलब्ध नहीं हैं। कृपया बाद में कोशिश करें।"}}

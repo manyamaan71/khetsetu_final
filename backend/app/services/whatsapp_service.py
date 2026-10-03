@@ -9,7 +9,6 @@ Anything else -> short help message.
 All credentials come from environment variables (config.py). They are never sent to the browser.
 When credentials are missing, replies are logged instead of sent, so the flow is testable locally.
 """
-import asyncio
 import hashlib
 import hmac
 import logging
@@ -201,7 +200,7 @@ def handle_message(msg: dict, db=None) -> None:
                 send_text(sender, DOWNLOAD_ERR)
                 return
             try:
-                result = asyncio.run(analyze_image(data, db=db, source="whatsapp"))
+                result = analyze_image(data, db=db, source="whatsapp")
             except InvalidImageError:
                 send_text(sender, PHOTO_ERR)
                 return

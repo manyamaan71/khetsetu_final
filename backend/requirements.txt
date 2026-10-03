@@ -12,14 +12,20 @@ numpy>=1.26.4,<2.0.0
 scipy>=1.12,<2.0.0
 scikit-learn>=1.4,<2.0
 matplotlib>=3.8,<4.0
+scikit-learn>=1.4,<2.0
+matplotlib>=3.8,<4.0
 fpdf2>=2.8.0,<3.0.0
 uharfbuzz>=0.39.0
 pypdf>=5.0,<7.0
-ai-edge-litert>=1.0.0
-psycopg[binary]>=3.2,<4.0
-PyJWT>=2.8,<3.0
-slowapi>=0.1.9,<1.0
+
+# --- ML runtime ------------------------------------------------------------
+# Runs the model in model/khetsetu.tflite (falls back to model/khetsetu.keras).
+# Tested with TensorFlow 2.16.2 on Python 3.12. Supported: Python 3.10 - 3.12.
+tensorflow>=2.16.1,<2.17
+
+# --- tests -----------------------------------------------------------------
+pytest>=8.0.0
 
 # --- Optional: Gemini explanation layer (backend/app/services/ai_explanation_service.py) --
 # Only imported if GEMINI_API_KEY is set in .env; the app works fully without it.
-google-genai>=1.0.0,<2.0.0
+google-generativeai>=0.7.0,<1.0.0

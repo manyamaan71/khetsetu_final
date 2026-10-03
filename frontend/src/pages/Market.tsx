@@ -6,7 +6,6 @@ import Card from '../components/Card';
 import { fetchMarketPrices, ApiError } from '../services/api';
 import { MarketResponse } from '../types';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import { localizedCropName } from '../config/agricultureTerms';
 
 const CROPS = ['Tomato', 'Potato', 'Maize'];
 const STATES = ['Karnataka', 'Maharashtra', 'Uttar Pradesh', 'Punjab', 'Himachal Pradesh'];
@@ -26,7 +25,7 @@ export default function Market() {
     setLoading(true);
     setError(null);
     try {
-      setData(await fetchMarketPrices({ crop: crop || undefined, state: state || undefined, language }));
+      setData(await fetchMarketPrices({ crop: crop || undefined, state: state || undefined }));
     } catch (err) {
       if (err instanceof ApiError && (err.code === 'offline' || err.code === 'network')) setError(t(isOnline ? 'error_network' : 'market_offline'));
       else if (err instanceof ApiError && err.code === 'timeout') setError(t('error_timeout'));
@@ -40,7 +39,7 @@ export default function Market() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [crop, language, state]);
+  }, [crop, state]);
 
   return (
     <div className="space-y-4 pt-2">
@@ -53,12 +52,10 @@ export default function Market() {
         <div className="bg-leaf-100 text-leaf-800 text-xs font-bold text-center py-1.5 rounded-full">{t('market_live')}</div>
       )}
       {data && !loading && data.source === 'cached' && (
-        <div role="status" className="bg-amber-100 text-amber-900 text-sm font-bold text-center py-2 rounded-xl">
-          {data.message?.[language] || t('market_cached')}
-        </div>
+        <div className="bg-amber-100 text-amber-900 text-sm font-bold text-center py-2 rounded-xl">{t('market_cached')}</div>
       )}
-      {data?.source === 'unavailable' && !loading && (
-        <div role="status" className="bg-red-50 text-red-700 text-sm font-semibold text-center py-2 rounded-xl">{data.message?.[language] || t('dashboard_market_unavailable')}</div>
+      {data?.source === 'unavailable' && !loading && data.message && (
+        <div className="bg-red-50 text-red-700 text-sm font-semibold text-center py-2 rounded-xl">{data.message[language]}</div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
@@ -103,14 +100,14 @@ export default function Market() {
             <div key={i} className="h-24 bg-white rounded-2xl animate-pulse border border-leaf-100" />
           ))}
         </div>
-      ) : (data?.rows.length ?? 0) === 0 && !error && data?.source !== 'unavailable' ? (
+      ) : (data?.rows.length ?? 0) === 0 && !error ? (
         <Card className="text-center py-10 text-gray-500">{t('market_none')}</Card>
       ) : (
         <div className="space-y-3">
           {(data?.rows ?? []).map((row, i) => (
             <Card key={i}>
               <div className="flex items-center justify-between mb-2">
-                <p className="font-bold text-gray-800">{localizedCropName(row.crop, language)}</p>
+                <p className="font-bold text-gray-800">{row.crop}</p>
                 <p className="text-xs text-gray-400">{row.date}</p>
               </div>
               <p className="flex items-center gap-1 text-sm text-gray-500 mb-3">

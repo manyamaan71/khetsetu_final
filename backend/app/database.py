@@ -8,7 +8,7 @@ no application code needs to change.
 """
 from datetime import datetime, timezone
 
-from sqlalchemy import create_engine, Column, String, Float, Boolean, DateTime, Integer, Text
+from sqlalchemy import create_engine, Column, String, Float, Boolean, DateTime, Integer
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
@@ -38,15 +38,6 @@ class ScanRecord(Base):
     demo_mode = Column(Boolean, nullable=False, default=False)
     status = Column(String, nullable=False, default="ok")      # ok | low_confidence | not_a_leaf
     source = Column(String, nullable=False, default="web")     # web | whatsapp
-
-
-class TranslationCache(Base):
-    """Persistent translations keyed by the source text and target language."""
-    __tablename__ = "translation_cache"
-
-    text_hash = Column(String(64), primary_key=True)
-    language = Column(String(8), primary_key=True)
-    translated_text = Column(Text, nullable=False)
 
 
 def init_db() -> None:

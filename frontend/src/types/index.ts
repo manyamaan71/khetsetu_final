@@ -36,18 +36,6 @@ export interface Prediction {
   is_healthy: boolean;
   crop_hi: string;
   disease_hi: string;
-  crop_i18n?: Partial<Record<Language, string>>;
-  disease_i18n?: Partial<Record<Language, string>>;
-  crop_kn?: string;
-  disease_kn?: string;
-  crop_ta?: string;
-  disease_ta?: string;
-  crop_te?: string;
-  disease_te?: string;
-  crop_mr?: string;
-  disease_mr?: string;
-  crop_bn?: string;
-  disease_bn?: string;
 }
 
 /** Disease-specific advisory returned by the backend. This is the authoritative object for the result page. */
@@ -118,21 +106,11 @@ export interface HistoryItem {
   disease: string;
   hindi_crop: string;
   hindi_disease: string;
-  crop_i18n?: Partial<Record<Language, string>>;
-  disease_i18n?: Partial<Record<Language, string>>;
   confidence: number;
   is_healthy: boolean;
   is_confident: boolean;
   thumbnail?: string;
   result?: ScanOk;          // full result so "View" works offline
-}
-
-export function localName(item: Prediction | HistoryItem, field: 'crop' | 'disease', language: Language): string {
-  const localized = (field === 'crop' ? item.crop_i18n?.[language] : item.disease_i18n?.[language]) || undefined;
-  const hindi = field === 'crop'
-    ? ('crop_hi' in item ? item.crop_hi : item.hindi_crop)
-    : ('disease_hi' in item ? item.disease_hi : item.hindi_disease);
-  return localized || (language === 'hi' ? hindi : undefined) || item[field];
 }
 
 export interface MarketPriceRow {
@@ -149,7 +127,7 @@ export interface MarketResponse {
   message: Bi | null;
 }
 
-export interface MarketQuery { crop?: string; state?: string; district?: string; language?: Language }
+export interface MarketQuery { crop?: string; state?: string; district?: string }
 
 export interface HealthInfo {
   status: string;

@@ -10,14 +10,13 @@ from collections import Counter
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..auth import require_admin
 from ..database import get_session, ScanRecord
 
 router = APIRouter()
 
 
 @router.get("/admin/stats")
-async def admin_stats(db: Session = Depends(get_session), _user: dict = Depends(require_admin)):
+async def admin_stats(db: Session = Depends(get_session)):
     records = db.query(ScanRecord).all()
 
     total = len(records)

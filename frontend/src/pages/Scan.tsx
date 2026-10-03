@@ -9,7 +9,6 @@ import { compressImage, predictCrop, validateImageType, ApiError } from '../serv
 import ModelStatus from '../components/ModelStatus';
 import { saveLastResult, saveCurrentScanImage, addHistoryItem, makeThumbnail } from '../services/storageService';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import { localName } from '../types';
 
 export default function Scan() {
   const { t, language } = useLanguage();
@@ -67,12 +66,10 @@ export default function Scan() {
         addHistoryItem({
           id: `${Date.now()}`,
           date: new Date().toISOString(),
-          crop: localName(result.prediction, 'crop', 'en'),
-          disease: localName(result.prediction, 'disease', 'en'),
-          hindi_crop: localName(result.prediction, 'crop', 'hi'),
-          hindi_disease: localName(result.prediction, 'disease', 'hi'),
-          crop_i18n: result.prediction.crop_i18n,
-          disease_i18n: result.prediction.disease_i18n,
+          crop: result.prediction.crop,
+          disease: result.prediction.disease,
+          hindi_crop: result.prediction.crop_hi,
+          hindi_disease: result.prediction.disease_hi,
           confidence: result.prediction.confidence,
           is_healthy: result.prediction.is_healthy,
           is_confident: true,
@@ -147,7 +144,7 @@ export default function Scan() {
       {previewUrl && (
         <Card className="p-3">
           <div className="relative rounded-xl overflow-hidden">
-            <img src={previewUrl} alt={t('selected_leaf_preview')} className="w-full max-h-96 object-cover" />
+            <img src={previewUrl} alt="Selected crop leaf preview" className="w-full max-h-96 object-cover" />
             <button
               onClick={clearImage}
               aria-label={t('remove_image')}

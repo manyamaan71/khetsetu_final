@@ -15,65 +15,47 @@ interface LanguageContextValue {
 }
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
-const LANGUAGE_STORAGE_KEY = 'khetsetu_language';
-
-function readStoredLanguage(): Language | null {
-  try {
-    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return isValidLanguageCode(stored) ? stored : null;
-  } catch {
-    return null;
-  }
-}
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { profile, isAuthenticated, loading, updateProfile } = useAuth();
-  const [language, setLanguageState] = useState<Language>(() => readStoredLanguage() ?? DEFAULT_LANGUAGE_CODE);
+  const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE_CODE);
   const [isSavingLanguage, setIsSavingLanguage] = useState(false);
   const [saveError, setSaveError] = useState<TranslationKey | null>(null);
 
   useEffect(() => {
     if (loading) return;
-    const storedLanguage = readStoredLanguage();
     if (isAuthenticated && isValidLanguageCode(profile?.preferred_language)) {
-      setLanguageState(storedLanguage ?? profile.preferred_language);
+      setLanguageState(profile.preferred_language);
     } else if (!isAuthenticated) {
-      setLanguageState(storedLanguage ?? DEFAULT_LANGUAGE_CODE);
+      setLanguageState(DEFAULT_LANGUAGE_CODE);
     }
   }, [isAuthenticated, loading, profile?.preferred_language]);
 
   useEffect(() => {
     document.documentElement.lang = language;
-    try {
-      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-    } catch {
-      // Keep the in-memory preference when browser storage is unavailable.
-    }
   }, [language]);
 
   const setLanguage = useCallback(
-  async (nextLang: Language) => {
-    const validLang = isValidLanguageCode(nextLang) ? nextLang : DEFAULT_LANGUAGE_CODE;
-    setLanguageState(validLang);
-    document.documentElement.lang = validLang;
-    setSaveError(null);
+    async (nextLang: Language) => {
+      const validLang = isValidLanguageCode(nextLang) ? nextLang : DEFAULT_LANGUAGE_CODE;
+      setLanguageState(validLang);
+      document.documentElement.lang = validLang;
+      setSaveError(null);
 
-    if (!isAuthenticated || !profile || profile.preferred_language === validLang) return;
+      if (!isAuthenticated || !profile || profile.preferred_language === validLang) return;
 
-    setIsSavingLanguage(true);
-    try {
-      await updateProfile({ preferred_language: validLang });
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.warn('Could not persist preferred_language to Supabase (check SQL constraint):', err);
+      setIsSavingLanguage(true);
+      try {
+        await updateProfile({ preferred_language: validLang });
+      } catch (err) {
+        if (import.meta.env.DEV) console.error('Failed to save preferred_language to Supabase:', err);
+        setSaveError('language_save_error');
+      } finally {
+        setIsSavingLanguage(false);
       }
-      // Silently catch error so UI stays active in selected language without displaying error banner
-    } finally {
-      setIsSavingLanguage(false);
-    }
-  },
-  [isAuthenticated, profile?.preferred_language, updateProfile]
-);
+    },
+    [isAuthenticated, profile?.preferred_language, updateProfile]
+  );
 
   const t = useCallback(
     (key: TranslationKey): string => {
@@ -81,7 +63,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (!entry) return key as string;
       const localized = entry[language];
       if (localized) return localized;
-      return '—';
+      // Fallback 1: English
+      if (entry.en) return entry.en;
+      // Fallback 2: Hindi
+      if (entry.hi) return entry.hi;
+      return key as string;
     },
     [language]
   );

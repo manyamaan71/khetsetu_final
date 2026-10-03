@@ -23,10 +23,7 @@ Disabled unless GEMINI_API_KEY is set. Any failure (missing key, network,
 quota, malformed response) falls back to returning None so the caller uses
 guidance.json text directly - Gemini is never a required dependency.
 """
-import asyncio
-
 from ..config import settings
-from .translate_service import translate_text
 
 _MAX_LIST_ITEMS = 4
 
@@ -62,9 +59,9 @@ def _guidance_context(guidance: dict, language: str) -> str:
     return "\n".join(line for line in lines if line.split(": ", 1)[1])
 
 
-async def generate_extra_explanation(crop: str, disease: str, language: str = "en",
-                                     confidence: float | None = None,
-                                     guidance: dict | None = None) -> str | None:
+def generate_extra_explanation(crop: str, disease: str, language: str = "en",
+                               confidence: float | None = None,
+                               guidance: dict | None = None) -> str | None:
     """Returns an additive plain-language explanation string grounded in
     `guidance`, or None if the integration is disabled, unconfigured, or
     the request fails for any reason. NEVER used to pick crop/disease -
@@ -73,11 +70,14 @@ async def generate_extra_explanation(crop: str, disease: str, language: str = "e
         return None
 
     try:
-        from google import genai
+        import google.generativeai as genai  # optional dependency, imported lazily
 
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
-        context = _guidance_context(guidance, "en") if guidance else ""
+        lang_map = {"en": "English", "hi": "Hindi", "kn": "Kannada", "ta": "Tamil", "te": "Telugu", "mr": "Marathi", "bn": "Bengali"}
+        lang_name = lang_map.get(language, "English")
+        context = _guidance_context(guidance, language) if guidance else ""
         conf_pct = f"{confidence * 100:.0f}%" if confidence is not None else "unknown"
 
         prompt = (
@@ -87,23 +87,19 @@ async def generate_extra_explanation(crop: str, disease: str, language: str = "e
             f"Crop: {crop}\nCondition: {disease}\nModel confidence: {conf_pct}\n\n"
             f"Trusted reference information (use ONLY facts from here, in your own simple words):\n"
             f"{context}\n\n"
-            "Write 2-3 short, simple sentences in English for a farmer with limited literacy, "
+            f"Write 2-3 short, simple sentences in {lang_name} for a farmer with limited literacy, "
             "summarising what this means and the single most important next step. "
             "Do not invent facts not in the reference information above. "
             "Do not name any pesticide product or give a dosage. "
             "Do not mention percentages, models, or AI."
         )
-        response = await asyncio.to_thread(
-            client.models.generate_content,
-            model=settings.GEMINI_MODEL,
-            contents=prompt,
-            config={"temperature": 0.4, "max_output_tokens": 512},
+        response = model.generate_content(
+            prompt,
+            generation_config={"temperature": 0.4, "max_output_tokens": 200},
         )
         text = (getattr(response, "text", "") or "").strip()
-        if not text:
-            return None
-        return await translate_text(text, language) if language != "en" else text
+        return text or None
     except Exception as exc:  # noqa: BLE001 - Gemini must never be a hard dependency
         import logging
-        logging.getLogger("khetsetu.gemini").exception("Gemini explanation request failed: %s", exc)
+        logging.getLogger("khetsetu.gemini").warning("Gemini explanation request failed: %s", exc)
         return None

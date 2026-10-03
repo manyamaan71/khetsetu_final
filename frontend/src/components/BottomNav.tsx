@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { Home, ScanLine, LineChart, History, Settings } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function BottomNav({ dark = false }: { dark?: boolean }) {
+export default function BottomNav() {
   const { t } = useLanguage();
 
   const items = [
@@ -15,7 +15,7 @@ export default function BottomNav({ dark = false }: { dark?: boolean }) {
 
   return (
     <nav
-      className={`md:hidden fixed bottom-0 left-0 right-0 z-40 ${dark ? 'bg-[#101a1c] border-t border-[#253739]' : 'bg-white border-t border-leaf-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]'}`}
+      className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-leaf-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-40"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Primary navigation"
     >
@@ -26,8 +26,8 @@ export default function BottomNav({ dark = false }: { dark?: boolean }) {
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[56px] text-[11px] font-medium ${
-                isActive ? dark ? 'text-emerald-300' : 'text-leaf-700' : dark ? 'text-slate-500' : 'text-gray-400'
+              `flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[56px] text-[11px] font-medium ${
+                isActive ? 'text-leaf-700' : 'text-gray-400'
               }`
             }
           >
