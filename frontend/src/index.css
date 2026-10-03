@@ -11,7 +11,8 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+  font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Tamil',
+    'Noto Sans Telugu', 'Noto Sans Bengali', system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 

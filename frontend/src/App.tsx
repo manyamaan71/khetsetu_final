@@ -14,6 +14,9 @@ import Market from './pages/Market';
 import Advisory from './pages/Advisory';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import AboutPage from './pages/AboutPage';
 import { useAuth } from './context/AuthContext';
 
 function RootRoute() {
@@ -40,6 +43,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<RootRoute />} />
         <Route path="/login" element={<AuthPage mode="login" />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/signup" element={<AuthPage mode="signup" />} />
         <Route path="/auth/login" element={<AuthPage mode="login" />} />
         <Route path="/auth/signup" element={<AuthPage mode="signup" />} />
