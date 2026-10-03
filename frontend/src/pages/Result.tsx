@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Volume2, Square, RotateCcw, CheckCircle2, ShieldCheck, Sprout, Info, AlertCircle, AlertTriangle, Download, LoaderCircle,
-  Stethoscope, Droplets, FlaskConical, PhoneCall, Ban, Bug, Languages, TrendingUp, ScanSearch,
+  Stethoscope, Droplets, PhoneCall, Ban, Bug, TrendingUp, ScanSearch,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import ConfidenceIndicator from '../components/ConfidenceIndicator';
 import { getCurrentScanImage, getLastResult } from '../services/storageService';
-import { downloadScanReport } from '../services/api';
+import { downloadScanReport, translateTexts } from '../services/api';
 import LanguageSelector from '../components/LanguageSelector';
 import { speak, stopSpeaking, isSpeechSupported, getSpeechLang } from '../services/speechService';
 import { Language, ScanApiResponse, ScanOk, localName } from '../types';
@@ -33,14 +33,89 @@ function Bullets({ items }: { items: string[] }) {
 }
 
 function localizedValue(value: Record<string, string | string[]> | undefined, language: Language): string | string[] | undefined {
-  const result = value?.[language] ?? value?.en;
+  if (!value) return undefined;
+  const result = value[language] ?? value.en ?? value.hi;
   return typeof result === 'string' || Array.isArray(result) ? result : undefined;
 }
 
 function localizedList(value: Record<string, string | string[]> | undefined, language: Language): string[] {
-  const result = localizedValue(value, language);
-  if (Array.isArray(result)) return result.filter((item): item is string => typeof item === 'string');
-  return typeof result === 'string' && result ? [result] : [];
+  if (!value) return [];
+  // Direct check for language key first
+  const langResult = value[language];
+  if (Array.isArray(langResult)) return langResult.filter((item): item is string => typeof item === 'string');
+  if (typeof langResult === 'string' && langResult) return [langResult];
+
+  // Fallback check
+  const fallback = localizedValue(value, language);
+  if (Array.isArray(fallback)) return fallback.filter((item): item is string => typeof item === 'string');
+  if (typeof fallback === 'string' && fallback) return [fallback];
+  return [];
+}
+
+function renderContent(value: unknown, language: Language): ReactNode {
+  if (typeof value === 'string') return <p>{value}</p>;
+  if (Array.isArray(value)) {
+    const items = value.filter((item): item is string => typeof item === 'string');
+    return items.length ? <Bullets items={items} /> : null;
+  }
+  if (value && typeof value === 'object') {
+    const localized = localizedValue(value as Record<string, string | string[]>, language);
+    if (Array.isArray(localized)) return <Bullets items={localized.filter((item): item is string => typeof item === 'string')} />;
+    if (typeof localized === 'string' && localized) return <p>{localized}</p>;
+  }
+  return null;
+}
+
+type TranslationTarget = { path: (string | number)[]; text: string };
+
+function collectMissingTranslations(value: unknown, language: Language, path: (string | number)[] = [], output: TranslationTarget[] = []): TranslationTarget[] {
+  if (!value || typeof value !== 'object') return output;
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => collectMissingTranslations(item, language, [...path, index], output));
+    return output;
+  }
+
+  const record = value as Record<string, unknown>;
+  const english = record.en;
+  
+  // Check if target language ('kn', 'ta', 'te', etc.) is missing in object
+  if (record[language] === undefined && (typeof english === 'string' || Array.isArray(english))) {
+    if (typeof english === 'string') {
+      output.push({ path: [...path, language], text: english });
+    } else if (Array.isArray(english)) {
+      english.forEach((item, index) => {
+        if (typeof item === 'string') output.push({ path: [...path, language, index], text: item });
+      });
+    }
+    return output;
+  }
+
+  Object.entries(record).forEach(([key, item]) => {
+    if (!['en', 'hi', 'kn', 'ta', 'te', 'mr', 'bn'].includes(key)) {
+      collectMissingTranslations(item, language, [...path, key], output);
+    }
+  });
+  return output;
+}
+
+function setAtPath(target: Record<string, unknown>, path: (string | number)[], value: string) {
+  let cursor: unknown = target;
+  for (const part of path.slice(0, -1)) cursor = (cursor as Record<string | number, unknown>)[part];
+  (cursor as Record<string | number, unknown>)[path[path.length - 1]] = value;
+}
+
+async function localizeResult(source: ScanApiResponse, language: Language): Promise<ScanApiResponse | null> {
+  const localized = JSON.parse(JSON.stringify(source)) as ScanApiResponse;
+  if (language === 'en') return localized;
+  
+  const targets = collectMissingTranslations(localized, language);
+  if (!targets.length) return localized;
+
+  const requestTexts = targets.map((target) => target.text);
+  const translated = await translateTexts(requestTexts, language);
+  if (!translated || translated.length !== requestTexts.length) return null;
+  targets.forEach((target, index) => setAtPath(localized as unknown as Record<string, unknown>, target.path, translated[index]));
+  return localized;
 }
 
 function speechText(r: ScanOk, lang: Language, t: (k: any) => string): string {
@@ -64,6 +139,10 @@ export default function Result() {
   const { profile } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanApiResponse | null>(null);
+  const [sourceResult, setSourceResult] = useState<ScanApiResponse | null>(null);
+  const [translationLoading, setTranslationLoading] = useState(false);
+  const [translationFailed, setTranslationFailed] = useState(false);
+  const [resultLanguage, setResultLanguage] = useState<Language | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -72,13 +151,57 @@ export default function Result() {
   useEffect(() => {
     const data = getLastResult<ScanApiResponse>();
     if (!data) { navigate('/scan'); return; }
-    setResult(data);
+    setSourceResult(data);
     return () => stopSpeaking();
   }, [navigate]);
 
   useEffect(() => { stopSpeaking(); setSpeaking(false); setVoiceNote(null); }, [language]);
 
-  if (!result) return null;
+  useEffect(() => {
+    if (!sourceResult) return;
+    let active = true;
+    setResult(null);
+    setResultLanguage(null);
+    setTranslationFailed(false);
+
+    // If backend already returned exact native target language, use directly
+    if (language === 'en') {
+      setResult(sourceResult);
+      setResultLanguage('en');
+      return () => { active = false; };
+    }
+
+    setTranslationLoading(true);
+    void localizeResult(sourceResult, language)
+      .then((localized) => {
+        if (!active) return;
+        if (!localized) {
+          setTranslationFailed(true);
+          setResult(sourceResult);
+          setResultLanguage(language);
+          return;
+        }
+        setResult(localized);
+        setResultLanguage(language);
+      })
+      .catch(() => {
+        if (!active) return;
+        setTranslationFailed(true);
+        setResult(sourceResult);
+        setResultLanguage(language);
+      })
+      .finally(() => { if (active) setTranslationLoading(false); });
+    return () => { active = false; };
+  }, [sourceResult, language]);
+
+  if (!result || resultLanguage !== language) {
+    return (
+      <div className="mx-auto max-w-xl py-10 text-center text-sm text-gray-600" role="status">
+        {translationFailed ? t('dashboard_translation_unavailable') : translationLoading ? t('dashboard_loading_translation') : t('please_wait')}
+        <div className="mt-5 flex justify-center"><LanguageSelector variant="compact" /></div>
+      </div>
+    );
+  }
 
   const downloadReport = async () => {
     const scanId = result.client_scan_id;
@@ -149,7 +272,24 @@ export default function Result() {
 
   const r = result;
   const p = r.prediction;
-  const g = (r.advisory ?? r.guidance) as any;
+  const rawGuidance = (r.advisory ?? r.guidance) as any;
+  const combineLangField = (primaryKey: string, fallbackKey1: string, fallbackKey2?: string) => {
+    const p = rawGuidance[primaryKey];
+    if (p && typeof p === 'object' && Object.keys(p).length > 0) return p;
+    const f1 = rawGuidance[fallbackKey1];
+    if (f1 && typeof f1 === 'object' && Object.keys(f1).length > 0) return f1;
+    if (fallbackKey2) {
+      const f2 = rawGuidance[fallbackKey2];
+      if (f2 && typeof f2 === 'object' && Object.keys(f2).length > 0) return f2;
+    }
+    return {};
+  };
+
+  const g = {
+    ...rawGuidance,
+    what_should_i_do: combineLangField('what_should_i_do', 'immediate_actions', 'basic_care'),
+    treatment: combineLangField('treatment', 'management'),
+  };
   const adviceFields = [
     'what_we_found', 'what_is_it', 'why_it_happened', 'possible_cause', 'symptoms',
     'immediate_actions', 'basic_care', 'management', 'prevention', 'avoid',
@@ -187,11 +327,18 @@ export default function Result() {
         {langToggle}
       </div>
 
+      {translationFailed && (
+        <div role="status" className="rounded-xl bg-amber-50 px-3 py-2 text-center text-sm text-amber-800">
+          {t('dashboard_translation_unavailable')}
+        </div>
+      )}
+
       {adviceUsesEnglishFallback && (
         <div role="status" className="rounded-xl bg-amber-50 px-3 py-2 text-center text-xs text-amber-800">
           {t('advice_english_notice')}
         </div>
       )}
+
       {r.demo_mode && (
         <div className="bg-amber-100 text-amber-900 text-sm font-bold text-center py-2 px-3 rounded-xl flex items-center justify-center gap-2">
           <AlertTriangle size={16} /> {t('demo_banner')}
@@ -239,47 +386,39 @@ export default function Result() {
       )}
 
       <Section icon={<Info size={18} className="text-leaf-600" />} title={t('what_found')}>
-        <p className="text-[15px] leading-relaxed text-gray-700">{localizedValue(g.what_we_found, language) ?? localizedValue(g.what_is_it, language) ?? ''}</p>
+        <div className="text-[15px] leading-relaxed text-gray-700">{renderContent(g.what_we_found ?? g.what_is_it, language)}</div>
       </Section>
 
       <Section icon={<Stethoscope size={18} className="text-leaf-600" />} title={t('why_it_happened')}>
-        <Bullets items={localizedList(g.why_it_happened, language).length
-          ? localizedList(g.why_it_happened, language)
-          : localizedList(g.possible_cause, language)} />
+        {renderContent(g.why_it_happened ?? g.possible_cause, language)}
       </Section>
 
       <Section icon={<Bug size={18} className="text-leaf-600" />} title={t('sec_symptoms')}>
-        <Bullets items={localizedList(g.symptoms, language)} />
+        {renderContent(g.symptoms, language)}
       </Section>
 
       <Section icon={<CheckCircle2 size={18} className="text-leaf-600" />} title={t('what_should_i_do_now')}>
         <ol className="space-y-2 list-decimal list-inside text-[15px] leading-relaxed text-gray-700">
-          {(localizedList(g.immediate_actions, language).length
-            ? localizedList(g.immediate_actions, language)
-            : localizedList(g.basic_care, language)).map((step: string, idx: number) => (
-            <li key={idx}>{step}</li>
-          ))}
+          {renderContent(g.what_should_i_do, language)}
         </ol>
       </Section>
 
       <Section icon={<ShieldCheck size={18} className="text-leaf-600" />} title={t('treatment_management')}>
-        <Bullets items={localizedList(g.management, language)} />
+        {renderContent(g.treatment, language)}
       </Section>
 
       <Section icon={<Droplets size={18} className="text-leaf-600" />} title={t('how_to_prevent')}>
-        <Bullets items={localizedList(g.prevention, language)} />
+        {renderContent(g.prevention, language)}
       </Section>
 
       {!p.is_healthy && (
         <Section icon={<Ban size={18} className="text-red-600" />} title={t('avoid_title')}>
-          <Bullets items={localizedList(g.avoid, language)} />
+          {renderContent(g.avoid, language)}
         </Section>
       )}
 
       <Section icon={<PhoneCall size={18} className="text-leaf-600" />} title={t('when_to_seek_help')}>
-        <Bullets items={localizedList(g.when_to_seek_help, language).length
-          ? localizedList(g.when_to_seek_help, language)
-          : localizedList(g.consult_expert_when, language)} />
+        {renderContent(g.when_to_seek_help ?? g.consult_expert_when, language)}
       </Section>
 
       <Card>

@@ -8,15 +8,17 @@ made from this backend module only.
 """
 import base64
 import binascii
+import asyncio
 import hashlib
 import logging
+import time
 from collections import OrderedDict
 
 import httpx
 
 from ..config import settings
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 SARVAM_TTS_URL = "https://api.sarvam.ai/text-to-speech"
 SARVAM_TRANSLATE_URL = "https://api.sarvam.ai/translate"
 SCRIPT_RANGES = {
@@ -29,8 +31,14 @@ SCRIPT_RANGES = {
     "ml-IN": (0x0D00, 0x0D7F),
 }
 
+_translation_cache: dict[tuple[str, str], tuple[float, str]] = {}
+_TRANSLATION_CACHE_TTL = 12 * 60 * 60
 _tts_cache: OrderedDict[str, bytes] = OrderedDict()
 _TTS_CACHE_SIZE = 64
+
+
+class TtsTextTooLongError(Exception):
+    """Sarvam rejected a TTS request because its text exceeded a service limit."""
 
 
 def _tts_cache_key(text: str, lang: str) -> str:
@@ -42,12 +50,11 @@ def _log_request_failure(
     exc: Exception,
     response: httpx.Response | None = None,
 ) -> None:
-    if response is None and isinstance(exc, httpx.HTTPStatusError):
+    if response is None:
         response = getattr(exc, "response", None)
     status = response.status_code if response else "unavailable"
     body = response.text[:200] if response else ""
     logger.warning("Sarvam %s failed status=%s body=%r error=%s", operation, status, body, exc)
-
 
 def is_in_target_script(text: str, lang: str) -> bool:
     script_range = SCRIPT_RANGES.get(lang)
@@ -63,14 +70,58 @@ async def translate_text(client: httpx.AsyncClient, text: str, lang: str) -> str
             "source_language_code": "en-IN",
             "target_language_code": lang,
             "model": "sarvam-translate:v1",
-            "output_script": "fully-native",
         },
     )
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as exc:
+        _log_request_failure("translation", exc)
+        raise
     translated = response.json().get("translated_text", "").strip()
     if not translated:
         raise ValueError("Sarvam returned empty translated text")
     return translated
+
+
+async def translate_texts(texts: list[str], lang: str) -> list[str] | None:
+    if not settings.SARVAM_API_KEY:
+        return None
+    if lang == "en-IN":
+        return texts
+
+    now = time.monotonic()
+    results: list[str | None] = [None] * len(texts)
+    pending: dict[str, list[int]] = {}
+    for index, text in enumerate(texts):
+        key = (lang, text)
+        cached = _translation_cache.get(key)
+        if cached and now - cached[0] < _TRANSLATION_CACHE_TTL:
+            results[index] = cached[1]
+        else:
+            pending.setdefault(text, []).append(index)
+
+    if pending:
+        semaphore = asyncio.Semaphore(4)
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                async def translate_one(text: str) -> tuple[str, str]:
+                    async with semaphore:
+                        return text, await translate_text(client, text, lang)
+
+                translations = await asyncio.gather(*(translate_one(text) for text in pending))
+        except (httpx.HTTPError, ValueError) as exc:
+            _log_request_failure("translation batch", exc)
+            return None
+
+        translated_at = time.monotonic()
+        for original, translated in translations:
+            _translation_cache[(lang, original)] = (translated_at, translated)
+            for index in pending[original]:
+                results[index] = translated
+
+    if any(text is None for text in results):
+        return None
+    return [text for text in results if text is not None]
 
 
 async def text_to_speech(text: str, lang: str = "hi-IN") -> bytes | None:
@@ -88,7 +139,6 @@ async def text_to_speech(text: str, lang: str = "hi-IN") -> bytes | None:
             spoken_text = text
             if lang != "en-IN" and not is_in_target_script(text, lang):
                 logger.warning("Sarvam TTS translating text on the fly for language=%s", lang)
-            if lang != "en-IN" and not is_in_target_script(text, lang):
                 spoken_text = await translate_text(client, text, lang)
             tts_response = await client.post(
                 SARVAM_TTS_URL,
@@ -96,11 +146,7 @@ async def text_to_speech(text: str, lang: str = "hi-IN") -> bytes | None:
                 json={"text": spoken_text, "language_code": lang, "model": "bulbul:v3"},
             )
             response = tts_response
-            try:
-                tts_response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
-                _log_request_failure("TTS", exc)
-                raise
+            tts_response.raise_for_status()
             audios = tts_response.json().get("audios")
             if not isinstance(audios, list) or not audios or not isinstance(audios[0], str):
                 raise ValueError("Sarvam returned no audio")
@@ -112,6 +158,15 @@ async def text_to_speech(text: str, lang: str = "hi-IN") -> bytes | None:
             if len(_tts_cache) > _TTS_CACHE_SIZE:
                 _tts_cache.popitem(last=False)
             return audio
+    except httpx.HTTPStatusError as exc:
+        _log_request_failure("TTS request", exc, response)
+        body = response.text.lower() if response is not None else ""
+        if exc.response.status_code == 413 or (
+            exc.response.status_code == 400
+            and any(term in body for term in ("length", "too long", "maximum", "characters", "payload"))
+        ):
+            raise TtsTextTooLongError("Sarvam rejected TTS text length.") from exc
+        return None
     except (httpx.HTTPError, ValueError, binascii.Error) as exc:
         _log_request_failure("TTS request", exc, response)
         return None

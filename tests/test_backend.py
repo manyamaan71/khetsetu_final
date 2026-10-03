@@ -234,6 +234,7 @@ def test_market_live_then_cached_fallback(monkeypatch, tmp_path):
     from app.config import settings
     from app.services import market_service as ms
     monkeypatch.setattr(settings, "MARKET_API_KEY", "test-key")
+    monkeypatch.setattr(settings, "ALLOW_DEMO_MARKET", False)
     monkeypatch.setattr(settings, "DATA_DIR", str(tmp_path))
     ms._mem.clear()
     rec = [{"state": "Karnataka", "district": "Bengaluru", "market": "Bengaluru", "commodity": "Tomato",

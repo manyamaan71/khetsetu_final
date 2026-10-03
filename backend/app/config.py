@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     MARKET_API_KEY: str = ""
     MARKET_API_URL: str = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
     MARKET_TIMEOUT_SECONDS: float = 8.0
+    ALLOW_DEMO_MARKET: bool = True
 
     # --- Optional extras (never required) -------------------------------
     SARVAM_API_KEY: str = ""

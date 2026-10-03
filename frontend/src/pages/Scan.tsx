@@ -147,7 +147,7 @@ export default function Scan() {
       {previewUrl && (
         <Card className="p-3">
           <div className="relative rounded-xl overflow-hidden">
-            <img src={previewUrl} alt="Selected crop leaf preview" className="w-full max-h-96 object-cover" />
+            <img src={previewUrl} alt={t('selected_leaf_preview')} className="w-full max-h-96 object-cover" />
             <button
               onClick={clearImage}
               aria-label={t('remove_image')}

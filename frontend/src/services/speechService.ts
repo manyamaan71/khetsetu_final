@@ -4,7 +4,7 @@
  * Uses the optional Sarvam backend first and keeps Web Speech as the offline/unavailable fallback.
  */
 import { LANGUAGES, DEFAULT_LANGUAGE_CODE } from '../config/languages';
-import { requestTtsAudio } from './api';
+import { requestTtsAudio, TtsHttpError } from './api';
 
 export type SpeechLang = string;
 
@@ -92,6 +92,34 @@ const audioCache = new Map<string, Blob>();
 
 export function setTtsProvider(p: TtsProvider) { provider = p; }
 
+interface AudioChunk {
+  text: string;
+  splitRetried: boolean;
+}
+
+type ChunkAudioResult = { audio: Blob | null; splitForLengthError: boolean };
+
+function isLengthError(error: TtsHttpError): boolean {
+  return error.status === 413
+    || (error.status === 400 && /length|too long|maximum|characters|payload/i.test(error.responseBody));
+}
+
+function splitChunkInHalf(text: string): [string, string] | null {
+  const middle = Math.floor(text.length / 2);
+  let boundary = text.lastIndexOf(' ', middle);
+  if (boundary <= 0) boundary = text.indexOf(' ', middle);
+  if (boundary <= 0 || boundary >= text.length - 1) {
+    const characters = Array.from(text);
+    const splitAt = Math.floor(characters.length / 2);
+    const first = characters.slice(0, splitAt).join('');
+    const second = characters.slice(splitAt).join('');
+    return first && second ? [first, second] : null;
+  }
+  const first = text.slice(0, boundary).trim();
+  const second = text.slice(boundary + 1).trim();
+  return first && second ? [first, second] : null;
+}
+
 async function playAudioBlob(response: Blob, generation: number): Promise<boolean> {
   let audioUrl: string | null = null;
   let cancelPlayback: (() => void) | null = null;
@@ -138,34 +166,58 @@ export async function speak(text: string, lang: SpeechLang = 'en-IN'): Promise<b
 
   const chunks = chunk(text);
   if (typeof navigator === 'undefined' || navigator.onLine) {
-    const fetchAudio = async (part: string): Promise<Blob | null> => {
+    const queue: AudioChunk[] = chunks.map((part) => ({ text: part, splitRetried: false }));
+    const fetchAudio = async (part: string): Promise<ChunkAudioResult> => {
       const key = JSON.stringify([lang, part]);
       const cached = audioCache.get(key);
-      if (cached) return cached;
-      const response = await requestTtsAudio(part, lang);
-      if (response) audioCache.set(key, response);
-      return response;
+      if (cached) return { audio: cached, splitForLengthError: false };
+      try {
+        const response = await requestTtsAudio(part, lang);
+        if (response) audioCache.set(key, response);
+        return { audio: response, splitForLengthError: false };
+      } catch (error) {
+        return {
+          audio: null,
+          splitForLengthError: error instanceof TtsHttpError && isLengthError(error),
+        };
+      }
     };
 
-    let pendingAudio = chunks.length ? fetchAudio(chunks[0]) : Promise.resolve(null);
-    for (let index = 0; index < chunks.length; index += 1) {
-      const audioResponse = await pendingAudio;
+    let pendingAudio = queue.length ? fetchAudio(queue[0].text) : Promise.resolve(null);
+    for (let index = 0; index < queue.length; index += 1) {
+      const currentChunk = queue[index];
+      const audioResult = await pendingAudio;
       if (generation !== speechGeneration || cancelled) return false;
-      if (!audioResponse) {
+      if (audioResult === null) return false;
+      if (audioResult.splitForLengthError && !currentChunk.splitRetried) {
+        const halves = splitChunkInHalf(currentChunk.text);
+        if (halves) {
+          queue.splice(
+            index,
+            1,
+            { text: halves[0], splitRetried: true },
+            { text: halves[1], splitRetried: true },
+          );
+          pendingAudio = fetchAudio(queue[index].text);
+          index -= 1;
+          continue;
+        }
+      }
+      if (!audioResult.audio) {
         if (!browserProvider.hasVoiceFor(lang)) return false;
-        await browserProvider.speak(chunks.slice(index).join(' '), lang);
+        await browserProvider.speak(queue.slice(index).map((part) => part.text).join(' '), lang);
         return true;
       }
 
-      const nextAudio = index + 1 < chunks.length ? fetchAudio(chunks[index + 1]) : null;
-      if (!await playAudioBlob(audioResponse, generation)) {
+      const nextAudio = index + 1 < queue.length ? fetchAudio(queue[index + 1].text) : null;
+      if (!await playAudioBlob(audioResult.audio, generation)) {
         if (generation !== speechGeneration || cancelled || !browserProvider.hasVoiceFor(lang)) return false;
-        await browserProvider.speak(chunks.slice(index).join(' '), lang);
+        await browserProvider.speak(queue.slice(index).map((part) => part.text).join(' '), lang);
         return true;
       }
       if (nextAudio) pendingAudio = nextAudio;
     }
-    if (chunks.length) return true;
+    if (queue.length) return true;
   }
 
   if (generation !== speechGeneration || cancelled || !browserProvider.isSupported()) return false;

@@ -38,6 +38,16 @@ export interface Prediction {
   disease_hi: string;
   crop_i18n?: Partial<Record<Language, string>>;
   disease_i18n?: Partial<Record<Language, string>>;
+  crop_kn?: string;
+  disease_kn?: string;
+  crop_ta?: string;
+  disease_ta?: string;
+  crop_te?: string;
+  disease_te?: string;
+  crop_mr?: string;
+  disease_mr?: string;
+  crop_bn?: string;
+  disease_bn?: string;
 }
 
 /** Disease-specific advisory returned by the backend. This is the authoritative object for the result page. */
@@ -124,6 +134,7 @@ export function localName(item: Prediction | HistoryItem, field: 'crop' | 'disea
     : ('disease_hi' in item ? item.disease_hi : item.hindi_disease);
   return localized || (language === 'hi' ? hindi : undefined) || item[field];
 }
+
 export interface MarketPriceRow {
   market: string; crop: string; state: string; district: string;
   min_price: number; max_price: number; modal_price: number; date: string; unit: string;
@@ -138,7 +149,7 @@ export interface MarketResponse {
   message: Bi | null;
 }
 
-export interface MarketQuery { crop?: string; state?: string; district?: string }
+export interface MarketQuery { crop?: string; state?: string; district?: string; language?: Language }
 
 export interface HealthInfo {
   status: string;

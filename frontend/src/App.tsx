@@ -6,7 +6,7 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import OnboardingPage from './pages/OnboardingPage';
 import ProfilePage from './pages/ProfilePage';
-import Home from './pages/Home';
+import DashboardPage from './pages/DashboardPage';
 import Scan from './pages/Scan';
 import Result from './pages/Result';
 import HistoryPage from './pages/History';
@@ -42,16 +42,16 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<RootRoute />} />
-        <Route path="/login" element={<AuthPage mode="login" />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/login" element={<AuthPage mode="login" />} />
         <Route path="/signup" element={<AuthPage mode="signup" />} />
         <Route path="/auth/login" element={<AuthPage mode="login" />} />
         <Route path="/auth/signup" element={<AuthPage mode="signup" />} />
         <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/home" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/scan" element={<ProtectedRoute><Scan /></ProtectedRoute>} />
         <Route path="/result" element={<ProtectedRoute><Result /></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />

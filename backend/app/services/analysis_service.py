@@ -15,6 +15,7 @@ from ..disease_info import get_guidance, prediction_block
 from ..model import classifier
 from ..preprocessing import load_image_from_bytes, plant_pixel_ratio, preprocess_image
 from . import ai_explanation_service
+from .translate_service import LANGUAGE_CODES, translate_dict, translate_text
 
 LOW_CONF_MESSAGE = {
     "title": {"en": "Photo unclear", "hi": "फोटो साफ नहीं है"},
@@ -31,8 +32,9 @@ NOT_LEAF_MESSAGE = {
 }
 
 
-def analyze_image(data: bytes, db=None, source: str = "web", language: str = "en") -> dict:
+async def analyze_image(data: bytes, db=None, source: str = "web", language: str = "en") -> dict:
     """Raises preprocessing.InvalidImageError for unreadable/unsupported images."""
+    language = language if language in LANGUAGE_CODES else "en"
     t0 = time.perf_counter()
     img = load_image_from_bytes(data)
     leaf_ratio = plant_pixel_ratio(img)
@@ -47,7 +49,8 @@ def analyze_image(data: bytes, db=None, source: str = "web", language: str = "en
 
     if leaf_ratio < settings.MIN_LEAF_RATIO:
         result = {**base, "status": "not_a_leaf", "is_confident": False, "confidence": None,
-                  "prediction": None, "guidance": None, "message": NOT_LEAF_MESSAGE}
+                  "prediction": None, "guidance": None,
+                  "message": await translate_dict(NOT_LEAF_MESSAGE, language)}
         _log(db, source, "not_a_leaf", None, 0.0)
         return _finish(result, t0, t_pre, 0.0)
 
@@ -57,17 +60,34 @@ def analyze_image(data: bytes, db=None, source: str = "web", language: str = "en
         # Backend-enforced safety: NO disease/crop name leaves the server below the threshold.
         result = {**base, "status": "low_confidence", "is_confident": False,
                   "confidence": round(confidence, 4), "prediction": None, "guidance": None,
-                  "message": LOW_CONF_MESSAGE}
+                  "message": await translate_dict(LOW_CONF_MESSAGE, language)}
         _log(db, source, "low_confidence", None, confidence)
         return _finish(result, t0, t_pre, t_inf)
 
     prediction = prediction_block(class_name, confidence)
-    guidance = get_guidance(class_name)
+    if language not in ("en", "hi"):
+        crop_field, disease_field = f"crop_{language}", f"disease_{language}"
+        if not prediction.get(crop_field):
+            prediction[crop_field] = await translate_text(prediction["crop"], language)
+        if not prediction.get(disease_field):
+            prediction[disease_field] = await translate_text(prediction["disease"], language)
+    guidance = await translate_dict(get_guidance(class_name), language)
+    guidance.setdefault("what_should_i_do", guidance.get("immediate_actions", []))
+    guidance.setdefault("treatment", guidance.get("management", []))
+    guidance.setdefault("when_to_seek_help", guidance.get("consult_expert_when", []))
     advisory = guidance
     result = {**base, "status": "ok", "is_confident": True, "confidence": prediction["confidence"],
               "prediction": prediction, "guidance": guidance, "advisory": advisory, "message": None,
+              "symptoms": guidance["symptoms"],
+              "what_should_i_do": guidance["what_should_i_do"],
+              "treatment": guidance["treatment"],
+              "prevention": guidance["prevention"],
+              "avoid": guidance["avoid"],
+              "when_to_seek_help": guidance["when_to_seek_help"],
+              "severity": guidance["severity"],
+              "spread_risk": guidance["spread_risk"],
               "source": "ml_model", "explanation_source": "guidance"}
-    extra = ai_explanation_service.generate_extra_explanation(
+    extra = await ai_explanation_service.generate_extra_explanation(
         prediction["crop"], prediction["disease"], language,
         confidence=prediction["confidence"], guidance=guidance)
     if extra:
