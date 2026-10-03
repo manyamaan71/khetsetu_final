@@ -1,4 +1,5 @@
 import { ScanApiResponse, MarketResponse, MarketQuery, HealthInfo, Language } from '../types';
+import { supabase } from '../lib/supabase';
 
 // Dev: Vite proxies /api to FastAPI (vite.config.ts). Production: set VITE_API_BASE_URL.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -55,7 +56,12 @@ async function request(path: string, init?: RequestInit, timeoutMs = REQUEST_TIM
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(`${API_BASE}${path}`, { ...init, signal: ctrl.signal });
+    const headers = new Headers(init?.headers);
+    if (['/predict', '/report/pdf', '/tts', '/admin/stats'].includes(path.split('?')[0])) {
+      const { data: { session } } = await supabase?.auth.getSession() ?? { data: { session: null } };
+      if (session?.access_token) headers.set('Authorization', ['Bearer', session.access_token].join(' '));
+    }
+    return await fetch(`${API_BASE}${path}`, { ...init, headers, signal: ctrl.signal });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw new ApiError('timeout', 'Request timed out');
     throw new ApiError('network', 'Network request failed');
@@ -117,6 +123,19 @@ export async function fetchHealth(): Promise<HealthInfo | null> {
   } catch {
     return null;
   }
+export async function fetchAdminStats(): Promise<{
+  total_scans: number;
+  healthy_count: number;
+  disease_count: number;
+  low_confidence_count: number;
+  disease_distribution: Record<string, number>;
+  crop_distribution: Record<string, number>;
+}> {
+  const res = await request('/admin/stats');
+  if (!res.ok) throw await errorFrom(res);
+  return res.json();
+}
+
 }
 
 export async function requestTtsAudio(text: string, language: string): Promise<Blob | null> {

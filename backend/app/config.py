@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(str(PROJECT_ROOT / ".env"), str(BACKEND_DIR / ".env")), extra="ignore")
 
+    # --- Runtime security ------------------------------------------------
+    APP_ENV: Literal["dev", "production"] = "dev"
+    REQUIRE_AUTH: bool = False
+    SUPABASE_JWT_SECRET: str = ""
+
     # --- ML -------------------------------------------------------------
     # Folder that holds khetsetu.tflite / khetsetu.keras / class_config.json / model_meta.json
     MODEL_DIR: str = str(PROJECT_ROOT / "model")
@@ -51,6 +56,7 @@ class Settings(BaseSettings):
     # --- Optional extras (never required) -------------------------------
     SARVAM_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.8-flash"
 
     @property
     def allowed_origins_list(self) -> list[str]:

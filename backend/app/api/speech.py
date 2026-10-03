@@ -1,7 +1,9 @@
 """Sarvam speech proxy."""
 from pydantic import BaseModel, Field
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
+from ..auth import require_user
+from ..rate_limit import limiter
 
 from ..services.speech_service import synthesize_speech
 
@@ -24,8 +26,9 @@ class TTSRequest(BaseModel):
 
 
 @router.post("/tts")
+@limiter.limit("20/minute")
 @router.post("/speech/tts", include_in_schema=False)
-async def text_to_speech(payload: TTSRequest):
+async def text_to_speech(request: Request, payload: TTSRequest, _user: dict | None = Depends(require_user)):
     text = payload.text.strip()
     if not text:
         raise HTTPException(status_code=422, detail={"code": "empty_text"})

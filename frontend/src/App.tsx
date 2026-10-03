@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import OnboardingPage from './pages/OnboardingPage';
@@ -51,7 +52,7 @@ export default function App() {
         <Route path="/market" element={<ProtectedRoute><Market /></ProtectedRoute>} />
         <Route path="/advisory" element={<ProtectedRoute><Advisory /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
 
         <Route path="/dashboard" element={<Navigate to="/home" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
