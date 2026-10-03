@@ -39,6 +39,55 @@ def test_sarvam_speech_route_falls_back_for_unsupported_locale(monkeypatch):
     assert response.status_code == 422
 
 
+def test_translation_route_returns_translated_texts_and_maps_locale(monkeypatch):
+    calls = []
+
+    async def fake_translate(texts, language):
+        calls.append((texts, language))
+        return ["ಟೊಮೇಟೊ", "ಆರಂಭಿಕ ರೋಗ"]
+
+    monkeypatch.setattr(speech, "translate_texts", fake_translate)
+
+    with TestClient(APP) as client:
+        response = client.post("/api/translate", json={"texts": ["Tomato", "Early Blight"], "language": "kn"})
+
+    assert response.status_code == 200
+    assert response.json() == {"texts": ["ಟೊಮೇಟೊ", "ಆರಂಭಿಕ ರೋಗ"]}
+    assert calls == [(["Tomato", "Early Blight"], "kn-IN")]
+
+
+def test_translation_route_rejects_unsupported_language():
+    with TestClient(APP) as client:
+        response = client.post("/api/translate", json={"texts": ["Tomato"], "language": "xx"})
+
+    assert response.status_code == 422
+
+
+def test_translation_route_maps_all_supported_languages(monkeypatch):
+    calls = []
+
+    async def fake_translate(texts, language):
+        calls.append(language)
+        return texts
+
+    monkeypatch.setattr(speech, "translate_texts", fake_translate)
+
+    expected = {
+        "en": "en-IN",
+        "hi": "hi-IN",
+        "kn": "kn-IN",
+        "ta": "ta-IN",
+        "te": "te-IN",
+        "mr": "mr-IN",
+        "bn": "bn-IN",
+    }
+    with TestClient(APP) as client:
+        for language, locale in expected.items():
+            response = client.post("/api/translate", json={"texts": ["Tomato"], "language": language})
+            assert response.status_code == 200
+            assert calls[-1] == locale
+
+
 def test_sarvam_service_translates_then_returns_decoded_wav(monkeypatch):
     calls = []
     audio_bytes = b"RIFF-kannada-wav"
@@ -70,7 +119,6 @@ def test_sarvam_service_translates_then_returns_decoded_wav(monkeypatch):
         "source_language_code": "en-IN",
         "target_language_code": "kn-IN",
         "model": "sarvam-translate:v1",
-        "output_script": "fully-native",
     }
     assert json.loads(calls[1].content) == {
         "text": "ಟೊಮೇಟೊ ಎಲೆ ಪರಿಶೀಲಿಸಿ",

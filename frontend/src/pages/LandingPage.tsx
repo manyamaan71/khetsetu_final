@@ -48,6 +48,11 @@ export default function LandingPage() {
           <Button variant="outline">{t('login_button')}</Button>
         </Link>
       </div>
+      <nav aria-label="Information" className="flex justify-center gap-4 pb-2 text-sm text-leaf-800">
+        <Link to="/about" className="underline">About</Link>
+        <Link to="/privacy" className="underline">Privacy</Link>
+        <Link to="/terms" className="underline">Terms</Link>
+      </nav>
     </div>
   );
 }

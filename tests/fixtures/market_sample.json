@@ -1,0 +1,48 @@
+{
+  "records": [
+    {
+      "state": "Karnataka",
+      "district": "Bengaluru",
+      "market": "Bengaluru",
+      "commodity": "Tomato",
+      "arrival_date": "02/10/2026",
+      "min_price": "1,500",
+      "max_price": "2,100",
+      "modal_price": "1,800",
+      "variety": "Local"
+    },
+    {
+      "state": "Maharashtra",
+      "district": "Pune",
+      "market": "Pune",
+      "commodity": "Potato",
+      "arrival_date": "01/10/2026",
+      "min_price": "1,200",
+      "max_price": "1,700",
+      "modal_price": "1,450",
+      "variety": ""
+    },
+    {
+      "state": "Karnataka",
+      "district": "Mysuru",
+      "market": "Mysuru",
+      "commodity": "Maize",
+      "arrival_date": "29/09/2026",
+      "min_price": "",
+      "max_price": "2,400",
+      "modal_price": "2,200",
+      "variety": "Hybrid"
+    },
+    {
+      "state": "Karnataka",
+      "district": "Bengaluru",
+      "market": "Bengaluru",
+      "commodity": "Tomato",
+      "arrival_date": "03/10/2026",
+      "min_price": "0",
+      "max_price": "0",
+      "modal_price": "0",
+      "variety": "Invalid zero-price row"
+    }
+  ]
+}

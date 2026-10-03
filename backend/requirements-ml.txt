@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# For loading legacy Keras models; TFLite models use ai-edge-litert.
+tensorflow>=2.16.1,<2.17

@@ -3,7 +3,7 @@ import { Home, ScanLine, LineChart, History, Settings, Sprout, BookOpen } from '
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 
-export default function TopNav() {
+export default function TopNav({ dark = false }: { dark?: boolean }) {
   const { t } = useLanguage();
 
   const items = [
@@ -16,8 +16,8 @@ export default function TopNav() {
   ];
 
   return (
-    <header className="hidden md:flex items-center justify-between px-8 py-4 bg-white border-b border-leaf-100 sticky top-0 z-40">
-      <Link to="/" className="flex items-center gap-2 font-extrabold text-xl text-leaf-800">
+    <header className={`hidden md:flex items-center justify-between px-8 py-4 sticky top-0 z-40 ${dark ? 'bg-[#101a1c] border-b border-[#253739]' : 'bg-white border-b border-leaf-100'}`}>
+      <Link to="/" className={`flex items-center gap-2 font-extrabold text-xl ${dark ? 'text-white' : 'text-leaf-800'}`}>
         <span className="bg-leaf-600 text-white rounded-xl p-2 flex items-center justify-center">
           <Sprout size={22} />
         </span>
@@ -31,8 +31,10 @@ export default function TopNav() {
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                isActive ? 'bg-leaf-100 text-leaf-800' : 'text-gray-500 hover:bg-leaf-50'
+              `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                isActive
+                  ? dark ? 'bg-[#1d3334] text-emerald-200' : 'bg-leaf-100 text-leaf-800'
+                  : dark ? 'text-slate-400 hover:bg-[#1a292b] hover:text-white' : 'text-gray-500 hover:bg-leaf-50'
               }`
             }
           >

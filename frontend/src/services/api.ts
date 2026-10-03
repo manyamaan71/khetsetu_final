@@ -1,4 +1,5 @@
-import { ScanApiResponse, MarketResponse, MarketQuery, HealthInfo, Language } from '../types';
+﻿import { ScanApiResponse, MarketResponse, MarketQuery, HealthInfo, Language } from '../types';
+import { supabase } from '../lib/supabase';
 
 // Dev: Vite proxies /api to FastAPI (vite.config.ts). Production: set VITE_API_BASE_URL.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -11,6 +12,12 @@ export class ApiError extends Error {
   constructor(code: ApiErrorCode, message: string) {
     super(message);
     this.code = code;
+  }
+}
+
+export class TtsHttpError extends Error {
+  constructor(readonly status: number, readonly responseBody: string) {
+    super(`TTS request failed with HTTP ${status}`);
   }
 }
 
@@ -55,7 +62,12 @@ async function request(path: string, init?: RequestInit, timeoutMs = REQUEST_TIM
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(`${API_BASE}${path}`, { ...init, signal: ctrl.signal });
+    const headers = new Headers(init?.headers);
+    if (['/predict', '/report/pdf', '/tts', '/admin/stats', '/translate'].includes(path.split('?')[0])) {
+      const { data: { session } } = await supabase?.auth.getSession() ?? { data: { session: null } };
+      if (session?.access_token) headers.set('Authorization', ['Bearer', session.access_token].join(' '));
+    }
+    return await fetch(`${API_BASE}${path}`, { ...init, headers, signal: ctrl.signal });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw new ApiError('timeout', 'Request timed out');
     throw new ApiError('network', 'Network request failed');
@@ -105,6 +117,7 @@ export async function fetchMarketPrices(query: MarketQuery): Promise<MarketRespo
   if (query.crop) params.set('crop', query.crop);
   if (query.state) params.set('state', query.state);
   if (query.district) params.set('district', query.district);
+  if (query.language) params.set('language', query.language);
   const res = await request(`/market-prices?${params.toString()}`);
   if (!res.ok) throw new ApiError('server', 'Server error');
   return res.json();
@@ -119,6 +132,40 @@ export async function fetchHealth(): Promise<HealthInfo | null> {
   }
 }
 
+export async function fetchAdminStats(): Promise<{
+  total_scans: number;
+  healthy_count: number;
+  disease_count: number;
+  low_confidence_count: number;
+  disease_distribution: Record<string, number>;
+  crop_distribution: Record<string, number>;
+}> {
+  const res = await request('/admin/stats');
+  if (!res.ok) throw await errorFrom(res);
+  return res.json();
+}
+
+export async function translateTexts(texts: string[], language: Language): Promise<string[] | null> {
+  if (!texts.length) return [];
+  try {
+    const res = await request('/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texts, language, target_lang: language }),
+    }, 65_000);
+
+    if (!res.ok) return null;
+    const payload = await res.json() as { texts?: unknown; translations?: unknown; results?: unknown };
+    
+    const candidate = payload.texts ?? payload.translations ?? payload.results;
+    return Array.isArray(candidate) && candidate.every((text) => typeof text === 'string')
+      ? (candidate as string[])
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function requestTtsAudio(text: string, language: string): Promise<Blob | null> {
   if (!text.trim()) return null;
   try {
@@ -127,9 +174,16 @@ export async function requestTtsAudio(text: string, language: string): Promise<B
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, language }),
     }, 65_000);
-    if (!res.ok || !res.headers.get('content-type')?.startsWith('audio/wav')) return null;
+    if (!res.ok) {
+      if (res.status >= 400 && res.status < 500) {
+        throw new TtsHttpError(res.status, await res.text());
+      }
+      return null;
+    }
+    if (!res.headers.get('content-type')?.startsWith('audio/wav')) return null;
     return await res.blob();
-  } catch {
+  } catch (error) {
+    if (error instanceof TtsHttpError) throw error;
     return null;
   }
 }
