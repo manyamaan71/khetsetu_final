@@ -85,8 +85,16 @@ def test_confident_disease_prediction(client, fake_model, leaf_bytes):
     assert r.status_code == 200
     b = r.json()
     assert b["status"] == "ok" and b["is_confident"] is True
-    assert b["prediction"] == {"class_name": "Tomato___Late_blight", "crop": "Tomato", "disease": "Late Blight",
-                               "confidence": 0.94, "is_healthy": False, "crop_hi": "टमाटर", "disease_hi": b["prediction"]["disease_hi"]}
+    prediction = b["prediction"]
+    assert {key: prediction[key] for key in (
+        "class_name", "crop", "disease", "confidence", "is_healthy", "crop_hi", "disease_hi",
+    )} == {
+        "class_name": "Tomato___Late_blight", "crop": "Tomato", "disease": "Late Blight",
+        "confidence": 0.94, "is_healthy": False, "crop_hi": "टमाटर",
+        "disease_hi": prediction["disease_hi"],
+    }
+    assert prediction["crop_i18n"] == {"en": "Tomato", "hi": "टमाटर"}
+    assert prediction["disease_i18n"]["en"] == "Late Blight"
     assert b["guidance"]["symptoms"]["hi"] and b["guidance"]["urgency"] == "act_fast"
     assert b["message"] is None
 
