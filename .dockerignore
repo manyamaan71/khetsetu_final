@@ -1,0 +1,15 @@
+.git
+.github
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.venv
+**/venv
+**/node_modules
+**/.env
+**/.env.*
+frontend
+tests
+scripts
+ml/dataset
+*.db

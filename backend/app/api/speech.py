@@ -42,9 +42,3 @@ async def text_to_speech(request: Request, payload: TTSRequest, _user: dict | No
         raise HTTPException(status_code=502, detail={"code": "speech_unavailable"})
 
     return Response(content=audio_bytes, media_type="audio/wav")
-    if audio_response is None:
-        raise HTTPException(status_code=503, detail={"code": "sarvam_unavailable"})
-
-    # Sarvam returns JSON containing its base64 audio payload; the existing
-    # frontend speech service decodes it and falls back to browser speech on error.
-    return Response(content=audio_response, media_type="application/json")

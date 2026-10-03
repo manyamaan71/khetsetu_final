@@ -70,10 +70,9 @@ def generate_extra_explanation(crop: str, disease: str, language: str = "en",
         return None
 
     try:
-        import google.generativeai as genai  # optional dependency, imported lazily
+        from google import genai
 
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
         lang_map = {"en": "English", "hi": "Hindi", "kn": "Kannada", "ta": "Tamil", "te": "Telugu", "mr": "Marathi", "bn": "Bengali"}
         lang_name = lang_map.get(language, "English")
@@ -93,9 +92,10 @@ def generate_extra_explanation(crop: str, disease: str, language: str = "en",
             "Do not name any pesticide product or give a dosage. "
             "Do not mention percentages, models, or AI."
         )
-        response = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.4, "max_output_tokens": 200},
+        response = client.models.generate_content(
+            model=settings.GEMINI_MODEL,
+            contents=prompt,
+            config={"temperature": 0.4, "max_output_tokens": 200},
         )
         text = (getattr(response, "text", "") or "").strip()
         return text or None
